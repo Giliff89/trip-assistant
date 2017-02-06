@@ -14,9 +14,9 @@ class User(db.Model):
         return "<User user_id=%s username=%s>" % (self.user_id, self.username)
 
     user_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    username = db.Column(db.String(64), unique=True, nullable=False)
-    email = db.Column(db.String(64), unique=True, nullable=True)
-    password = db.Column(db.String(64), nullable=False)
+    username = db.Column(db.String(32), unique=True, nullable=False)
+    # email = db.Column(db.String(64), unique=True, nullable=True)
+    password = db.Column(db.String(32), nullable=False)
 
 
 def connect_to_db(app):
@@ -47,3 +47,19 @@ def check_login(username, password):
         return auth.all().user_id
     else:
         return False
+
+
+def add_new_user(username, password):
+    """Takes user input from registration form and adds to users table"""
+
+    new_user = User.insert()
+
+    new_user.execute({'username': username, 'password': password})
+    new_user.commit()
+
+
+if __name__ == "__main__":
+
+    from server import app
+    connect_to_db(app)
+    print "Connected to DB."
