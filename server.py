@@ -6,7 +6,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 
 from secrets import SECRET_KEY
 
-from model import check_user, check_login, add_new_user
+from model import check_user, check_login, db, connect_to_db, User
 
 
 app = Flask(__name__)
@@ -36,11 +36,14 @@ def registration():
 def process_registration():
     """Redirects user to the homepage if the username is not taken"""
 
-    username = request.form.get('username')
-    password = request.form.get('password')
+    username = request.form['username']
+    password = request.form['password']
+
+    new_user = User(username=username, password=password)
 
     if check_user(username) is False:
-        add_new_user(username, password)
+        db.session.add(new_user)
+        db.session.commit()
         return redirect('/')
     else:
         flash('That username is taken, choose a new username or login')

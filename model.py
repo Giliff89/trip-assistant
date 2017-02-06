@@ -1,4 +1,4 @@
-from flask_sqlalchemy import flask_sqlalchemy
+from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
@@ -15,14 +15,14 @@ class User(db.Model):
 
     user_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     username = db.Column(db.String(32), unique=True, nullable=False)
-    # email = db.Column(db.String(64), unique=True, nullable=True)
     password = db.Column(db.String(32), nullable=False)
 
 
 def connect_to_db(app):
     """Connect the database to our Flask app."""
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///user_trips'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///trip_assistant'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.app = app
     db.init_app(app)
 
@@ -47,15 +47,6 @@ def check_login(username, password):
         return auth.all().user_id
     else:
         return False
-
-
-def add_new_user(username, password):
-    """Takes user input from registration form and adds to users table"""
-
-    new_user = User.insert()
-
-    new_user.execute({'username': username, 'password': password})
-    new_user.commit()
 
 
 if __name__ == "__main__":
