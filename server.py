@@ -6,6 +6,8 @@ from flask_debugtoolbar import DebugToolbarExtension
 
 from secrets import SECRET_KEY
 
+from model import check_user, check_login
+
 
 app = Flask(__name__)
 
@@ -39,6 +41,28 @@ def process_registration():
     # password = request.form.get('password')
 
     return redirect('/')
+
+
+@app.route('/login', methods=["GET", "POST"])
+def user_login():
+    """Checks if login credentials match database"""
+
+    if request.method == "GET":
+        return render_template("login.html")
+    else:
+        username = request.form.get('username')
+        password = request.form.get('password')
+        if check_user(username) is True:
+            authenticate = check_user(username, password)
+            if authenticate:
+                session['user'] = authenticate
+                flash('Login successful')
+                return redirect('/')
+            else:
+                flash('The password did not match the username')
+        else:
+            return redirect('/register')
+
 
 
 if __name__ == "__main__":
