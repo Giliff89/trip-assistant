@@ -13,8 +13,12 @@ class User(db.Model):
 
         return "<User user_id=%s username=%s>" % (self.user_id, self.username)
 
-    user_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    username = db.Column(db.String(32), unique=True, nullable=False)
+    user_id = db.Column(db.Integer,
+                        autoincrement=True,
+                        primary_key=True)
+    username = db.Column(db.String(32),
+                         unique=True,
+                         nullable=False)
     password = db.Column(db.String(32), nullable=False)
     q1_term = db.Column(db.String(20), nullable=True)
     q2_term = db.Column(db.String(20), nullable=True)
@@ -26,26 +30,46 @@ class User(db.Model):
 class Trip(db.Model):
     """Trip information which maps to user_id."""
 
-    trip_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    user_id = db.Column(db.Integer, foreign_key=True, nullable=False)
+    __tablename__ = "trips"
+
+    trip_id = db.Column(db.Integer,
+                        autoincrement=True,
+                        primary_key=True)
+    user_id = db.Column(db.Integer,
+                        db.ForeignKey('users.user_id'),
+                        nullable=False)
     days = db.Column(db.Integer, nullable=False)
     location = db.Column(db.String(128), nullable=False)
 
+    users = db.relationship('User')
+
 
 class Recommendation(db.Model):
-    """One day worth of recommendations for a trip."""
+    """One day of recommendations for a trip."""
+
+    __tablename__ = "recommendations"
 
     rec_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    trip_id = db.Column(db.Integer, foreign_key=True, nullable=False)
-    restaurant_id = db.Column(db.Integer, foreign_key=True, nullable=False)
-    activity_id = db.Column(db.Integer, foreign_key=True, nullable=False)
+    trip_id = db.Column(db.Integer,
+                        db.ForeignKey('trips.trip_id'),
+                        nullable=False)
+    restaurant_id = db.Column(db.Integer,
+                              db.ForeignKey('restaurants.restaurant_id'),
+                              nullable=False)
+    activity_id = db.Column(db.Integer,
+                            db.ForeignKey('activities.activity_id'),
+                            nullable=False)
     day_num = db.Column(db.Integer, nullable=True)
 
 
 class Activity(db.Model):
     """Single activity recommendation."""
 
-    activity_id = db.Column(db.Integer, autoincrement=True, primary_key=True)  # Can I use a Yelp id here?
+    __tablename__ = "activities"
+
+    activity_id = db.Column(db.Integer,
+                            autoincrement=True,
+                            primary_key=True)  # Can I use a Yelp id here?
     name = db.Column(db.String(80), nullable=False)
     location = db.Column(db.String(256), nullable=False)
     yelp = db.Column(db.String(256), nullable=False)
@@ -55,7 +79,11 @@ class Activity(db.Model):
 class Restaurant(db.Model):
     """Single restaurant recommendation."""
 
-    restaurant_id = db.Column(db.Integer, autoincrement=True, primary_key=True)  # Can I use a Yelp id here?
+    __tablename__ = "restaurants"
+
+    restaurant_id = db.Column(db.Integer,
+                              autoincrement=True,
+                              primary_key=True)  # Can I use a Yelp id here?
     name = db.Column(db.String(80), nullable=False)
     location = db.Column(db.String(256), nullable=False)
     yelp = db.Column(db.String(256), nullable=False)
@@ -98,3 +126,5 @@ if __name__ == "__main__":
     from server import app
     connect_to_db(app)
     print "Connected to DB."
+
+    # db.create_all()

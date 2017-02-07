@@ -4,15 +4,13 @@ from flask import (Flask, render_template, redirect, request, flash,
                    session)
 from flask_debugtoolbar import DebugToolbarExtension
 
-from secrets import SECRET_KEY
-
 from model import check_user, check_login, db, connect_to_db, User
 
 
 app = Flask(__name__)
 
 
-app.secret_key = SECRET_KEY
+app.secret_key = 'SECRET_KEY'
 #  for Flask sessions and debug toolbar
 
 app.jinja_env.undefined = StrictUndefined
@@ -71,12 +69,21 @@ def user_login():
             return redirect('/register')
 
 
+@app.route('/quiz', methods=["GET", "POST"])
+def user_preferences():
+    """User takes a 5 question quiz to defin their travel preferences"""
+
+    if request.method == "GET":
+        return render_template("personality_quiz.html")
+    else:
+        pass  # need to add the post in for user preferences
+
 
 if __name__ == "__main__":
     app.debug = True
     app.jinja_env.auto_reload = app.debug
 
-    # connect_to_db(app)
+    connect_to_db(app)
 
     DebugToolbarExtension(app)
 

@@ -1,9 +1,86 @@
-% extends 'base.html' %}
+{% extends 'base.html' %}
 {% block content %}
 
-<h1>What are your travel preferences?</h1>
+<h1>Travel personality quiz</h1>
 
-<form method="POST">
+<h2>What are your travel preferences?</h2>
+
+<form action="/quiz" method="POST">
+
+  <div>
+    Question 1) When it comes to sight seeing:
+    <br>
+    <br>
+    I want to take it all in while being active!
+    <input type="radio" name="sights" value="active">
+    <br>
+    I prefer to enjoy the sights while relaxing.
+    <input type="radio" name="sights" value="relax">
+    <br>
+  </div>
+
+  <br>
+  <br>
+
+  <div>
+    Question 2) When it comes to dining:
+    <br>
+    <br>
+    I value an authentic dining experience.
+    <input type="radio" name="dining" value="authentic">
+    <br>
+    I love to dine at the finest restaurants.
+    <input type="radio" name="dining" value="luxury">
+    <br>
+  </div>
+
+  <br>
+  <br>
+
+  <div>
+    Question 3) When it comes to activities:
+    <br>
+    <br>
+    I want to see the more famous and popular go-to spots.
+    <input type="radio" name="popularity" value="tourist">
+    <br>
+    I prefer seeking out the local's favorites and hidden gems.
+    <input type="radio" name="popularity" value="locavore">
+    <br>
+  </div>
+
+  <br>
+  <br>
+
+  <div>
+    Question 4) When it comes to what you like to see:
+    <br>
+    <br>
+    I am enthusiastic about arts, architecture and history!
+    <input type="radio" name="values" value="arts">
+    <br>
+    I enjoy learning what the local culture is like at markets and festivals.
+    <input type="radio" name="values" value="markets">
+    <br>
+  </div>
+
+  <br>
+  <br>
+
+  <div> 
+    Question 5) What is your take on a travel budget?
+    <br>
+    <br>
+    Money is no object, who knows when I will be back?
+    <input type="radio" name="budget" value="lavish">
+    <br>
+    I want to enjoy myself while staying budget conscious.
+    <input type="radio" name="budget" value="modest">
+    <br>
+  </div>
+
+  <br>
+  <br>
 
     <input type="submit">
 
