@@ -20,11 +20,11 @@ class User(db.Model):
                          unique=True,
                          nullable=False)
     password = db.Column(db.String(32), nullable=False)
-    q1_term = db.Column(db.String(20), nullable=True)
-    q2_term = db.Column(db.String(20), nullable=True)
-    q3_term = db.Column(db.String(20), nullable=True)
-    q4_term = db.Column(db.String(20), nullable=True)
-    q5_term = db.Column(db.String(20), nullable=True)
+    q1_term = db.Column(db.String(30), nullable=True)
+    q2_term = db.Column(db.String(30), nullable=True)
+    q3_term = db.Column(db.String(30), nullable=True)
+    q4_term = db.Column(db.String(30), nullable=True)
+    q5_term = db.Column(db.String(30), nullable=True)
 
 
 class Trip(db.Model):

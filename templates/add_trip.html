@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>Save a Trip</h1>
+
+<form method="POST">
+    Where are you going?  
+    <br>
+    <!-- Add in a field here for city, dropdown menu for country and if US dropdown for state -->
+    <input type="text" name="location"><br>
+    <br>
+    How long will you be there?
+    <br>
+    <input type="text" name="days"><br>
+    <br>
+    <input type="submit">
+
+</form>
+
+
+{% endblock %}

@@ -79,6 +79,16 @@ def user_preferences():
         pass  # need to add the post in for user preferences
 
 
+@app.route('/add_trip', methods=["GET", "POST"])
+def user_trip():
+    """Allows user to add a trip to their profile"""
+
+    if request.method == "GET":
+        return render_template("add_trip.html")
+    else:
+        pass  # need to add the post in for user trip
+
+
 if __name__ == "__main__":
     app.debug = True
     app.jinja_env.auto_reload = app.debug
