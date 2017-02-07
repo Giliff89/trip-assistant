@@ -25,6 +25,7 @@ class User(db.Model):
     q3_term = db.Column(db.String(30), nullable=True)
     q4_term = db.Column(db.String(30), nullable=True)
     q5_term = db.Column(db.String(30), nullable=True)
+    # change these to term_1, etc. and make foreign key to terms table
 
 
 class Trip(db.Model):
@@ -74,6 +75,7 @@ class Activity(db.Model):
     location = db.Column(db.String(256), nullable=False)
     yelp = db.Column(db.String(256), nullable=False)
     website = db.Column(db.String(256), nullable=False)
+    # may want to add keywords section? Maybe key terms table to match up to user choices?
 
 
 class Restaurant(db.Model):
@@ -88,6 +90,7 @@ class Restaurant(db.Model):
     location = db.Column(db.String(256), nullable=False)
     yelp = db.Column(db.String(256), nullable=False)
     website = db.Column(db.String(256), nullable=False)
+    # may want to add keywords section? Maybe key terms table to match up to user choices?
 
 
 def connect_to_db(app):

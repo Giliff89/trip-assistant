@@ -4,8 +4,7 @@ from flask import (Flask, render_template, redirect, request, flash,
                    session)
 from flask_debugtoolbar import DebugToolbarExtension
 
-from model import check_user, check_login, db, connect_to_db, User
-
+from model import check_user, check_login, db, connect_to_db, User, Trip, Recommendation, Activity, Restaurant
 
 app = Flask(__name__)
 
@@ -14,6 +13,13 @@ app.secret_key = 'SECRET_KEY'
 #  for Flask sessions and debug toolbar
 
 app.jinja_env.undefined = StrictUndefined
+
+# api = yelp.Api(consumer_key=['CONSUMER_KEY'],
+#                consumer_secret=['CONSUMER_SECRET'],
+#                token_key=['TOKEN'],
+#                token_secret=['TOKEN_SECRET'])
+# Reading about how to use yelp API
+# need to learn about and pip install rauth to handle OAuth stuff
 
 
 @app.route('/')
