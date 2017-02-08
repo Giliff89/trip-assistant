@@ -111,6 +111,17 @@ def user_trip():
         pass  # need to add the post in for user trip
 
 
+# @app.route('/recommendations')
+# def get_recs():
+#     """Use Yelp API to search for trip recommendations"""
+
+#     term = request.args.get("term")
+
+#     search database
+
+#     return jsonify(results)
+
+
 if __name__ == "__main__":
     app.debug = True
     app.jinja_env.auto_reload = app.debug

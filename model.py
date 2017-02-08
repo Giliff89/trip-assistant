@@ -41,6 +41,7 @@ class Trip(db.Model):
                         nullable=False)
     days = db.Column(db.Integer, nullable=False)
     location = db.Column(db.String(128), nullable=False)
+    # location can be address or zipcode with optional country for Yelp search capability
 
     users = db.relationship('User')
 
