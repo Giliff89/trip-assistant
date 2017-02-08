@@ -14,12 +14,25 @@ app.secret_key = 'SECRET_KEY'
 
 app.jinja_env.undefined = StrictUndefined
 
-# api = yelp.Api(consumer_key=['CONSUMER_KEY'],
-#                consumer_secret=['CONSUMER_SECRET'],
-#                token_key=['TOKEN'],
-#                token_secret=['TOKEN_SECRET'])
+
+# def get_results(params):
+# """Use Yelp API to search using the parameters from the user selected terms"""
+
+#   session = rauth.OAuth1Session(consumer_key='CONSUMER_KEY',
+#                                 consumer_secret='CONSUMER_SECRET',
+#                                 token_key='TOKEN',
+#                                 token_secret='TOKEN_SECRET')
+
+#   request = session.get("http://api.yelp.com/v2/search",params=params)
+
+#   Turn the JSON response into a Python dictionary
+#   data = request.json()
+#   session.close()
+
+#   return data
+
 # Reading about how to use yelp API
-# need to learn about and pip install rauth to handle OAuth stuff
+# need to learn more about and pip install rauth to handle OAuth stuff
 
 
 @app.route('/')
