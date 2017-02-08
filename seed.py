@@ -76,9 +76,9 @@ if __name__ == "__main__":
     db.create_all()
 
     # Import all of the different types of data
-    load_users()
-    load_trips()
-    load_recommendations()
-    load_activities()
-    load_restaurants()
+    # load_users()
+    # load_trips()
+    # load_recommendations()
+    # load_activities()
+    # load_restaurants()
     set_val_user_id()

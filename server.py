@@ -4,7 +4,10 @@ from flask import (Flask, render_template, redirect, request, flash,
                    session)
 from flask_debugtoolbar import DebugToolbarExtension
 
-from model import check_user, check_login, db, connect_to_db, User, Trip, Recommendation, Activity, Restaurant
+from model import check_user, check_login, db, connect_to_db
+from model import User, Trip, Recommendation, Activity, Restaurant
+
+# import rauth
 
 app = Flask(__name__)
 
@@ -23,7 +26,7 @@ app.jinja_env.undefined = StrictUndefined
 #                                 token_key='TOKEN',
 #                                 token_secret='TOKEN_SECRET')
 
-#   request = session.get("http://api.yelp.com/v2/search",params=params)
+#   request = session.get("http://api.yelp.com/v3/businesses/search",params=params)
 
 #   Turn the JSON response into a Python dictionary
 #   data = request.json()
