@@ -43,8 +43,6 @@ def get_results(params):
     # activities, and a search for food. I also need to set the limit to return 1 result
     # in each category per day of a trip
 
-    # ALSO: Need to be able to pull the data into a python dictionary
-
 
 @app.route('/')
 def index():
