@@ -30,13 +30,14 @@ def get_results(params):
 
     request = client.search('San Francisco', **params)
 
-#   # Turn the JSON response into a Python dictionary
+    # Need to turn the SearchResponse object into a Python dictionary
+    # Just doing this now to test in console
     data = request.businesses[0].name, request.businesses[1].name, request.businesses[2].name, request.businesses[3].name
 
     # return data
     print data
     # print request.businesses[0].name, request.businesses[1].name
-    # return request.businesses
+    # return request.businesses gives the SearchResponse objects, not usable
 
     # Search is working, now I need to be able to set the categories to do a search for
     # activities, and a search for food. I also need to set the limit to return 1 result
