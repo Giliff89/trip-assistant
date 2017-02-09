@@ -20,12 +20,11 @@ class User(db.Model):
                          unique=True,
                          nullable=False)
     password = db.Column(db.String(32), nullable=False)
-    q1_term = db.Column(db.String(30), nullable=True)
-    q2_term = db.Column(db.String(30), nullable=True)
-    q3_term = db.Column(db.String(30), nullable=True)
-    q4_term = db.Column(db.String(30), nullable=True)
-    q5_term = db.Column(db.String(30), nullable=True)
-    # change these to term_1, etc. and make foreign key to terms table
+    term_1 = db.Column(db.String(30), nullable=True)
+    term_2 = db.Column(db.String(30), nullable=True)
+    term_3 = db.Column(db.String(30), nullable=True)
+    term_4 = db.Column(db.String(30), nullable=True)
+    term_5 = db.Column(db.String(30), nullable=True)
 
 
 class Trip(db.Model):
@@ -41,7 +40,8 @@ class Trip(db.Model):
                         nullable=False)
     days = db.Column(db.Integer, nullable=False)
     location = db.Column(db.String(128), nullable=False)
-    # location can be address or zipcode with optional country for Yelp search capability
+    # location as a city (zipcode) for Yelp search capability
+    # One trip maps to one user, but a user can have many trips in their profile.
 
     users = db.relationship('User')
 
@@ -71,12 +71,13 @@ class Activity(db.Model):
 
     activity_id = db.Column(db.Integer,
                             autoincrement=True,
-                            primary_key=True)  # Can I use a Yelp id here?
+                            primary_key=True)
     name = db.Column(db.String(80), nullable=False)
     location = db.Column(db.String(256), nullable=False)
     yelp = db.Column(db.String(256), nullable=False)
+    yelp_business_id = db.Column(db.String(256), nullable=False)
     website = db.Column(db.String(256), nullable=False)
-    # may want to add keywords section? Maybe key terms table to match up to user choices?
+    # may want to add key terms section
 
 
 class Restaurant(db.Model):
@@ -86,18 +87,19 @@ class Restaurant(db.Model):
 
     restaurant_id = db.Column(db.Integer,
                               autoincrement=True,
-                              primary_key=True)  # Can I use a Yelp id here?
+                              primary_key=True)
     name = db.Column(db.String(80), nullable=False)
     location = db.Column(db.String(256), nullable=False)
     yelp = db.Column(db.String(256), nullable=False)
+    yelp_business_id = db.Column(db.String(256), nullable=False)
     website = db.Column(db.String(256), nullable=False)
-    # may want to add keywords section? Maybe key terms table to match up to user choices?
+    # may want to add key terms section
 
 
 def connect_to_db(app):
     """Connect the database to our Flask app."""
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///trip_assistant'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///recommendations'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.app = app
     db.init_app(app)

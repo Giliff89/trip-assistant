@@ -21,7 +21,7 @@ def load_users():
     # Read file and insert data
     # for row in open(file_name):
     #     row = row.rstrip()
-    #     user_id, username, password, q1_term, q2_term, q3_term, q4_term, q5_term = row.split("|")
+    #     user_id, username, password, term_1, term_2, term_3, term_4, term_5 = row.split("|")
 
     #     user = User(user_id=user_id,
     #                 username=username,

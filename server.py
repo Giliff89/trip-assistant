@@ -7,35 +7,42 @@ from flask_debugtoolbar import DebugToolbarExtension
 from model import check_user, check_login, db, connect_to_db
 from model import User, Trip, Recommendation, Activity, Restaurant
 
-# import rauth
+from yelp.client import Client
+from yelp.oauth1_authenticator import Oauth1Authenticator
+
+import json
 
 app = Flask(__name__)
-
 
 app.secret_key = 'SECRET_KEY'
 #  for Flask sessions and debug toolbar
 
 app.jinja_env.undefined = StrictUndefined
 
+cred = open('config_secret.json').read()
+creds = json.loads(cred)
+auth = Oauth1Authenticator(**creds)
+client = Client(auth)
 
-# def get_results(params):
-# """Use Yelp API to search using the parameters from the user selected terms"""
 
-#   session = rauth.OAuth1Session(consumer_key='CONSUMER_KEY',
-#                                 consumer_secret='CONSUMER_SECRET',
-#                                 token_key='TOKEN',
-#                                 token_secret='TOKEN_SECRET')
+def get_results(params):
+    """Use Yelp API to search using the parameters from the user selected terms"""
 
-#   request = session.get("http://api.yelp.com/v3/businesses/search",params=params)
+    request = client.search('San Francisco', **params)
 
-#   Turn the JSON response into a Python dictionary
-#   data = request.json()
-#   session.close()
+#   # Turn the JSON response into a Python dictionary
+    data = request.businesses[0].name, request.businesses[1].name, request.businesses[2].name, request.businesses[3].name
 
-#   return data
+    # return data
+    print data
+    # print request.businesses[0].name, request.businesses[1].name
+    # return request.businesses
 
-# Reading about how to use yelp API
-# need to learn more about and pip install rauth to handle OAuth stuff
+    # Search is working, now I need to be able to set the categories to do a search for
+    # activities, and a search for food. I also need to set the limit to return 1 result
+    # in each category per day of a trip
+
+    # ALSO: Need to be able to pull the data into a python dictionary
 
 
 @app.route('/')
@@ -79,26 +86,47 @@ def user_login():
     else:
         username = request.form.get('username')
         password = request.form.get('password')
-        if check_user(username) is True:
-            authenticate = check_user(username, password)
-            if authenticate:
-                session['user'] = authenticate
-                flash('Login successful')
-                return redirect('/')
-            else:
-                flash('The password did not match the username')
-        else:
-            return redirect('/register')
+
+        user = User.query.filter_by(username=username).first()
+
+        if not user:
+            flash("There is no user by that username")
+            return redirect("/login")
+
+        if user.password != password:
+            flash("the password does not match the username")
+            return redirect("/login")
+
+        session["user_id"] = user.user_id
+
+        flash("Logged in")
+        return redirect("/users/%s" % user.user_id)
 
 
-@app.route('/quiz', methods=["GET", "POST"])
-def user_preferences():
-    """User takes a 5 question quiz to defin their travel preferences"""
+@app.route('/logout')
+def logout():
+    """Log out"""
 
-    if request.method == "GET":
-        return render_template("personality_quiz.html")
-    else:
-        pass  # need to add the post in for user preferences
+    del session["user_id"]
+    flash("Logged Out.")
+    return redirect("/")
+
+
+@app.route('/users')
+def get_user_profile():
+    """brings user to their profile page when logged in"""
+
+    return render_template("user_profile.html")
+
+
+# @app.route('/preferences', methods=["GET", "POST"])
+# def user_preferences():
+#     """User chooses 5 terms to define their travel preferences"""
+
+#     if request.method == "GET":
+#         return render_template("personality_quiz.html")
+#     else:
+#         pass  # need to add the post in for user preferences
 
 
 @app.route('/add_trip', methods=["GET", "POST"])
@@ -113,7 +141,7 @@ def user_trip():
 
 # @app.route('/recommendations')
 # def get_recs():
-#     """Use Yelp API to search for trip recommendations"""
+#     """Search Yelp for trip recommendations"""
 
 #     term = request.args.get("term")
 

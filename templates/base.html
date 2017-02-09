@@ -6,8 +6,19 @@
     </title>
   </head>
   <body>
+    {% if "user_id" in session %}
+        <a href="/logout">Logout</a>
+    {% else %}
+        <a href="/login">Login</a>
+    {% endif %}
 
-    {% block content %} placeholder content {% endblock %}
+    {% for flash in get_flashed_messages() %}
+        {{ flash }}
+    {% endfor %}
+
+    {% block content %} 
+        placeholder content
+    {% endblock %}
 
   </body>
 </html>
