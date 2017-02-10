@@ -13,7 +13,9 @@
     {% endif %}
 
     {% for flash in get_flashed_messages() %}
-        {{ flash }}
+        <p>
+            {{ flash }}
+        </p>
     {% endfor %}
 
     {% block content %} 

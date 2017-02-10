@@ -40,10 +40,9 @@ class Trip(db.Model):
                         nullable=False)
     days = db.Column(db.Integer, nullable=False)
     location = db.Column(db.String(128), nullable=False)
-    # location as a city (zipcode) for Yelp search capability
-    # One trip maps to one user, but a user can have many trips in their profile.
+    # location as a city for Yelp search capability
 
-    users = db.relationship('User')
+    user = db.relationship('User', backref='trips')
 
 
 class Recommendation(db.Model):
@@ -63,6 +62,8 @@ class Recommendation(db.Model):
                             nullable=False)
     day_num = db.Column(db.Integer, nullable=True)
 
+    trip = db.relationship('Trip')
+
 
 class Activity(db.Model):
     """Single activity recommendation."""
@@ -72,12 +73,17 @@ class Activity(db.Model):
     activity_id = db.Column(db.Integer,
                             autoincrement=True,
                             primary_key=True)
+    rec_id = db.Column(db.Integer,
+                       db.ForeignKey('recommendations.rec_id'),
+                       nullable=False)
     name = db.Column(db.String(80), nullable=False)
+    rating = db.Column(db.Float, nullable=True)
     location = db.Column(db.String(256), nullable=False)
     yelp = db.Column(db.String(256), nullable=False)
     yelp_business_id = db.Column(db.String(256), nullable=False)
-    website = db.Column(db.String(256), nullable=False)
-    # may want to add key terms section
+    website = db.Column(db.String(256), nullable=True)
+
+    recommendation = db.relationship('Recommendation', backref='activities')
 
 
 class Restaurant(db.Model):
@@ -88,12 +94,17 @@ class Restaurant(db.Model):
     restaurant_id = db.Column(db.Integer,
                               autoincrement=True,
                               primary_key=True)
+    rec_id = db.Column(db.Integer,
+                       db.ForeignKey('recommendations.rec_id'),
+                       nullable=False)
     name = db.Column(db.String(80), nullable=False)
-    location = db.Column(db.String(256), nullable=False)
+    rating = db.Column(db.Float, nullable=True)
+    location = db.Column(db.String(256), nullable=False)  # may not need location if limiting to city?
     yelp = db.Column(db.String(256), nullable=False)
     yelp_business_id = db.Column(db.String(256), nullable=False)
-    website = db.Column(db.String(256), nullable=False)
-    # may want to add key terms section
+    website = db.Column(db.String(256), nullable=True)
+
+    recommendation = db.relationship('Recommendation', backref='restaurants')
 
 
 def connect_to_db(app):

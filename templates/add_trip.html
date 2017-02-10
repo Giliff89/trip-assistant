@@ -1,16 +1,16 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h1>Save a Trip</h1>
+<h1>Add a Trip</h1>
 
 <form method="POST">
-    Where are you going?  
+    Where are you going? (Enter city name)
     <br>
     <!-- Add in a field here for city, dropdown menu for country and if US dropdown for state -->
     <input type="text" name="location"><br>
     <br>
-    How long will you be there?
-    <!-- Currently just planning to store number of days as an in, may switch to dates
+    How long will you be there? (input number of days)
+    <!-- Currently just planning to store number of days as an int, may switch to dates
     with datetime in the future -->
     <br>
     <input type="text" name="days"><br>

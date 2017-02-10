@@ -5,11 +5,27 @@
 
 This will be the user profile page
 
+<!-- This will need to look different if there are no trips added for a user -->
+
+<h3> Your trips: </h3>
+    <!-- Add a for loop that queries trips tied to user_id, and creates a list item
+    with a link for each one on this page. Should print out location, num of days -->
+    {% if trips %}
+
+    <ul>
+      {% for trip in trips %}
+        <li>
+            <a href='/trip_profile/{{ trip.trip_id }}/{{ trip.location }}'>{{ trip.location }} for {{ trip.days }} days </a>
+        </li>
+      {% endfor %}
+    </ul>
+
+    {% endif %}
+
+
 <h3> Add a trip </h3>
 
-<h3> View your trips </h3>
-
-<h3> Get a trip recommendation! </h3> 
+<h3> Get a recommendation! </h3> 
 
 </p>
 

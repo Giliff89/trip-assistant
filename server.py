@@ -28,20 +28,35 @@ client = Client(auth)
 def get_results(params):
     """Use Yelp API to search using the parameters from the user selected terms"""
 
+    # pass in location as arguement/in search
+
     request = client.search('San Francisco', **params)
 
-    # Need to turn the SearchResponse object into a Python dictionary
-    # Just doing this now to test in console
-    data = request.businesses[0].name, request.businesses[1].name, request.businesses[2].name, request.businesses[3].name
+    # data = request.businesses[0].name, request.businesses[0].rating
 
+    # data = response.json()
     # return data
-    print data
-    # print request.businesses[0].name, request.businesses[1].name
-    # return request.businesses gives the SearchResponse objects, not usable
 
-    # Search is working, now I need to be able to set the categories to do a search for
+    # Next step is to try out different data types I can pull with this, and create
+    # dictionaries within a main dictionary. This will let me store the info I need
+    # for my tables. Check categories, check business ids, check urls for business and yelp
+
+    # Also need to do a second search for activities within the function? Maybe separate
+
+    restaurants = {}
+
+    index = 0
+
+    while index < 10:
+        restaurants[str(request.businesses[index].name)] = request.businesses[index].rating
+        index += 1
+
+    print restaurants
+    # I need to be able to set the categories to do a search for
     # activities, and a search for food. I also need to set the limit to return 1 result
     # in each category per day of a trip
+
+    # SEARCH BROKE! Invalid signature error? Problem with Oauth! Computer restart fixed the issue
 
 
 @app.route('/')
@@ -76,6 +91,10 @@ def process_registration():
         return redirect('/login')
 
 
+# def get_user_profile_by_id(user_id):
+#   """Given a user_id from the logged in session, return that user profile"""
+
+
 @app.route('/login', methods=["GET", "POST"])
 def user_login():
     """Checks if login credentials match database"""
@@ -99,7 +118,7 @@ def user_login():
         session["user_id"] = user.user_id
 
         flash("Logged in")
-        return redirect("/users/%s" % user.user_id)
+        return redirect("/profile/%s" % user.user_id)
 
 
 @app.route('/logout')
@@ -111,8 +130,8 @@ def logout():
     return redirect("/")
 
 
-@app.route('/users')
-def get_user_profile():
+@app.route('/profile/<user_id>')
+def get_user_profile(user_id):
     """brings user to their profile page when logged in"""
 
     return render_template("user_profile.html")
@@ -135,7 +154,29 @@ def user_trip():
     if request.method == "GET":
         return render_template("add_trip.html")
     else:
-        pass  # need to add the post in for user trip
+        location = request.form['location']
+        num_days = request.form['days']
+        user_id = session['user_id']
+
+        new_trip = Trip(location=location, days=num_days, user_id=user_id)
+
+        db.session.add(new_trip)
+        db.session.commit()
+        flash('Your trip has been successfully added!')
+        return redirect('/trip_profile/%s/%s' % (new_trip.trip_id, new_trip.location))
+
+
+@app.route('/trip_profile/<trip_id>/<location>')
+def trip_profile(trip_id, location):
+    """Displays trip information and recommendations for user's specific trip"""
+
+    # create function in funcs.py to query for trip_id and location, then you can pass it in
+    # to the trip_page.hmtl
+
+    # location =
+    # days =
+
+    return render_template('trip_page.html')
 
 
 # @app.route('/recommendations')
