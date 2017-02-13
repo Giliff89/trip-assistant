@@ -1,23 +1,17 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h1> Trip Details </h1>
+<h2> Your trip to {{ trip.location }} for {{ trip.days }} days</h2>
 
 
-<p>
-    {% for trip in trips %}
-        {% if trip.user_id == session['user_id'] %}
+<div>
 
-            Your trip to {{ trip.location }} for {{ trip.days }} days! 
+  <b>Get some recommendations for your trip!</b>
 
-        {% endif %}
 
-    {% endfor %}
-    <!-- need to fix the trip.location and trip.days to gets info -->
-    <!-- Should have trip location and number of days, record recs below -->
 
-    <!-- if recs, show w/button under, else, just show button -->
+  <!-- if recs, show here, else, just show button -->
 
-</p>
+</div>
 
 {% endblock%}

@@ -4,7 +4,8 @@ from flask import (Flask, render_template, redirect, request, flash,
                    session)
 from flask_debugtoolbar import DebugToolbarExtension
 
-from model import check_user, check_login, db, connect_to_db
+from funcs import check_user, check_login
+from model import db, connect_to_db
 from model import User, Trip, Recommendation, Activity, Restaurant
 
 from yelp.client import Client
@@ -32,11 +33,6 @@ def get_results(params):
 
     request = client.search('San Francisco', **params)
 
-    # data = request.businesses[0].name, request.businesses[0].rating
-
-    # data = response.json()
-    # return data
-
     # Next step is to try out different data types I can pull with this, and create
     # dictionaries within a main dictionary. This will let me store the info I need
     # for my tables. Check categories, check business ids, check urls for business and yelp
@@ -55,8 +51,6 @@ def get_results(params):
     # I need to be able to set the categories to do a search for
     # activities, and a search for food. I also need to set the limit to return 1 result
     # in each category per day of a trip
-
-    # SEARCH BROKE! Invalid signature error? Problem with Oauth! Computer restart fixed the issue
 
 
 @app.route('/')
@@ -134,7 +128,9 @@ def logout():
 def get_user_profile(user_id):
     """brings user to their profile page when logged in"""
 
-    return render_template("user_profile.html")
+    user = User.query.get(user_id)
+
+    return render_template("user_profile.html", user=user)
 
 
 # @app.route('/preferences', methods=["GET", "POST"])
@@ -170,13 +166,9 @@ def user_trip():
 def trip_profile(trip_id, location):
     """Displays trip information and recommendations for user's specific trip"""
 
-    # create function in funcs.py to query for trip_id and location, then you can pass it in
-    # to the trip_page.hmtl
+    trip = Trip.query.get(trip_id)
 
-    # location =
-    # days =
-
-    return render_template('trip_page.html')
+    return render_template('trip_page.html', trip=trip)
 
 
 # @app.route('/recommendations')

@@ -42,7 +42,7 @@ class Trip(db.Model):
     location = db.Column(db.String(128), nullable=False)
     # location as a city for Yelp search capability
 
-    user = db.relationship('User', backref='trips')
+    user = db.relationship('User', backref=db.backref('trips'))
 
 
 class Recommendation(db.Model):
@@ -62,7 +62,14 @@ class Recommendation(db.Model):
                             nullable=False)
     day_num = db.Column(db.Integer, nullable=True)
 
-    trip = db.relationship('Trip')
+    trip = db.relationship('Trip', backref=db.backref('recommendations'))
+
+    restaurant = db.relationship('Restaurant',
+                                 foreign_keys=[restaurant_id],
+                                 backref=db.backref('recommendation'))
+    activity = db.relationship('Activity',
+                               foreign_keys=[activity_id],
+                               backref=db.backref('recommendation'))
 
 
 class Activity(db.Model):
@@ -83,8 +90,6 @@ class Activity(db.Model):
     yelp_business_id = db.Column(db.String(256), nullable=False)
     website = db.Column(db.String(256), nullable=True)
 
-    recommendation = db.relationship('Recommendation', backref='activities')
-
 
 class Restaurant(db.Model):
     """Single restaurant recommendation."""
@@ -104,8 +109,6 @@ class Restaurant(db.Model):
     yelp_business_id = db.Column(db.String(256), nullable=False)
     website = db.Column(db.String(256), nullable=True)
 
-    recommendation = db.relationship('Recommendation', backref='restaurants')
-
 
 def connect_to_db(app):
     """Connect the database to our Flask app."""
@@ -116,26 +119,26 @@ def connect_to_db(app):
     db.init_app(app)
 
 
-def check_user(username):
-    """Comparing username in database to user entry."""
+# def check_user(username):
+#     """Comparing username in database to user entry."""
 
-    in_db = User.query.filter_by(username=username)
+#     in_db = User.query.filter_by(username=username)
 
-    if in_db.all():
-        return True
-    else:
-        return False
+#     if in_db.all():
+#         return True
+#     else:
+#         return False
 
 
-def check_login(username, password):
-    """Comparing username and password in database to user entry."""
+# def check_login(username, password):
+#     """Comparing username and password in database to user entry."""
 
-    auth = User.query.filter_by(username=username, password=password)
+#     auth = User.query.filter_by(username=username, password=password)
 
-    if auth.all():
-        return auth.all().user_id
-    else:
-        return False
+#     if auth.all():
+#         return auth.all().user_id
+#     else:
+#         return False
 
 
 if __name__ == "__main__":

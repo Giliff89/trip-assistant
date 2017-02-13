@@ -1,34 +1,30 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<p>
+<br>
 
-This will be the user profile page
-
-<!-- This will need to look different if there are no trips added for a user -->
+<h2> {{ user.username }}'s Profile </h2>
 
 <h3> Your trips: </h3>
-    <!-- Add a for loop that queries trips tied to user_id, and creates a list item
-    with a link for each one on this page. Should print out location, num of days -->
-    {% if trips %}
 
-    <ul>
-      {% for trip in trips %}
-        <li>
-            <a href='/trip_profile/{{ trip.trip_id }}/{{ trip.location }}'>{{ trip.location }} for {{ trip.days }} days </a>
-        </li>
-      {% endfor %}
-    </ul>
+{% if user.trips %}
 
-    {% endif %}
+  <ul>
+    {% for trip in user.trips %}
+      <li>
+          <a href='/trip_profile/{{ trip.trip_id }}/{{ trip.location }}'>Your {{ trip.location }} trip for {{ trip.days }} days </a>
+      </li>
+    {% endfor %}
+  </ul>
+
+{% endif %} 
 
 
-<h3> Add a trip </h3>
+<h3> <a href='/add_trip'>Add a trip </a></h3>
 
-<h3> Get a recommendation! </h3> 
+<!-- <h3> Get a recommendation! </h3>  -->
 
-</p>
 
-<!-- These will become links to the forms/pages/recommendation search -->
+<!-- Add in last link once set up -->
 
 {% endblock%}
