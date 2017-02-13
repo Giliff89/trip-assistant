@@ -85,7 +85,6 @@ class Activity(db.Model):
                        nullable=False)
     name = db.Column(db.String(80), nullable=False)
     rating = db.Column(db.Float, nullable=True)
-    location = db.Column(db.String(256), nullable=False)
     yelp = db.Column(db.String(256), nullable=False)
     yelp_business_id = db.Column(db.String(256), nullable=False)
     website = db.Column(db.String(256), nullable=True)
@@ -104,7 +103,6 @@ class Restaurant(db.Model):
                        nullable=False)
     name = db.Column(db.String(80), nullable=False)
     rating = db.Column(db.Float, nullable=True)
-    location = db.Column(db.String(256), nullable=False)  # may not need location if limiting to city?
     yelp = db.Column(db.String(256), nullable=False)
     yelp_business_id = db.Column(db.String(256), nullable=False)
     website = db.Column(db.String(256), nullable=True)
@@ -117,28 +115,6 @@ def connect_to_db(app):
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.app = app
     db.init_app(app)
-
-
-# def check_user(username):
-#     """Comparing username in database to user entry."""
-
-#     in_db = User.query.filter_by(username=username)
-
-#     if in_db.all():
-#         return True
-#     else:
-#         return False
-
-
-# def check_login(username, password):
-#     """Comparing username and password in database to user entry."""
-
-#     auth = User.query.filter_by(username=username, password=password)
-
-#     if auth.all():
-#         return auth.all().user_id
-#     else:
-#         return False
 
 
 if __name__ == "__main__":
