@@ -33,11 +33,9 @@ def get_results(params):
 
     request = client.search('San Francisco', **params)
 
-    # Next step is to try out different data types I can pull with this, and create
+    # Next step try out different data types I can pull with this, and create
     # dictionaries within a main dictionary. This will let me store the info I need
-    # for my tables. Check categories, check business ids, check urls for business and yelp
-
-    # Also need to do a second search for activities within the function? Maybe separate
+    # for my tables. Check categories, business ids, urls for business and yelp
 
     restaurants = {}
 
@@ -83,10 +81,6 @@ def process_registration():
     else:
         flash('That username is taken, choose a new username or login')
         return redirect('/login')
-
-
-# def get_user_profile_by_id(user_id):
-#   """Given a user_id from the logged in session, return that user profile"""
 
 
 @app.route('/login', methods=["GET", "POST"])
