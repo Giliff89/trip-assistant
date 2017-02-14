@@ -3,14 +3,43 @@
 
 <h2> Your trip to {{ trip.location }} for {{ trip.days }} days</h2>
 
+{% if trip.recommendations %}
 
-<div>
+  {% for recommendation in trip.recommendations %}
 
-  <b>Get some recommendations for your trip!</b>
+  <!-- May want to look at breaking the recommendation down into the two separate pieces -->
 
+  <p>
 
+    <b>Your recommendations:</b>
 
-  <!-- if recs, show here, else, just show button -->
+    <!-- Restaurant name, rating
+         Restaurant Yelp page link -->
+
+    <!-- Activity name, rating
+         Activity Yelp page link -->
+
+  </p>
+
+  {% endfor %}
+
+{% endif %}
+
+<p>
+  <b>Get trip recommendations:</b>
+</p>
+
+<div class=button>
+
+  Recommend me some restaurants!
+
+</div>
+
+<br>
+
+<div class=button>
+
+  Recommend me some activities!
 
 </div>
 

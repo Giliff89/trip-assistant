@@ -94,16 +94,6 @@ def get_user_profile(user_id):
     return render_template("user_profile.html", user=user)
 
 
-# @app.route('/preferences', methods=["GET", "POST"])
-# def user_preferences():
-#     """User chooses 5 terms to define their travel preferences"""
-
-#     if request.method == "GET":
-#         return render_template("personality_quiz.html")
-#     else:
-#         pass  # need to add the post in for user preferences
-
-
 @app.route('/add_trip', methods=["GET", "POST"])
 def user_trip():
     """Allows user to add a trip to their profile"""
@@ -130,13 +120,6 @@ def trip_profile(trip_id, location):
     trip = Trip.query.get(trip_id)
 
     return render_template('trip_page.html', trip=trip)
-
-
-# @app.route('/recommendations')
-# def get_recs():
-#     """Search Yelp for trip recommendations"""
-
-#     return redirect("/trip_profile/<trip-id>/<location>")
 
 
 if __name__ == "__main__":

@@ -74,7 +74,7 @@ def get_activities(location, days):
         yelp = activities[business]["yelp"]
         business_id = activities[business]["business_id"]
 
-        # new_activity = Activity(name=name, rating=rating, yelp=yelp, business_id=business_id, rec_id=100)
+        # new_activity = Activity(name=name, rating=rating, yelp=yelp, business_id=business_id)
 
         # db.session.add(new_activity)
         # db.session.commit()
