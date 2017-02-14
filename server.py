@@ -8,47 +8,12 @@ from funcs import check_user, check_login
 from model import db, connect_to_db
 from model import User, Trip, Recommendation, Activity, Restaurant
 
-from yelp.client import Client
-from yelp.oauth1_authenticator import Oauth1Authenticator
-
-import json
-
 app = Flask(__name__)
 
 app.secret_key = 'SECRET_KEY'
 #  for Flask sessions and debug toolbar
 
 app.jinja_env.undefined = StrictUndefined
-
-cred = open('config_secret.json').read()
-creds = json.loads(cred)
-auth = Oauth1Authenticator(**creds)
-client = Client(auth)
-
-
-def get_results(params):
-    """Use Yelp API to search using the parameters from the user selected terms"""
-
-    # pass in location as arguement/in search
-
-    request = client.search('San Francisco', **params)
-
-    # Next step try out different data types I can pull with this, and create
-    # dictionaries within a main dictionary. This will let me store the info I need
-    # for my tables. Check categories, business ids, urls for business and yelp
-
-    restaurants = {}
-
-    index = 0
-
-    while index < 10:
-        restaurants[str(request.businesses[index].name)] = request.businesses[index].rating
-        index += 1
-
-    print restaurants
-    # I need to be able to set the categories to do a search for
-    # activities, and a search for food. I also need to set the limit to return 1 result
-    # in each category per day of a trip
 
 
 @app.route('/')
@@ -107,6 +72,8 @@ def user_login():
 
         flash("Logged in")
         return redirect("/profile/%s" % user.user_id)
+
+        # Can condense this with check_user and check_login functions
 
 
 @app.route('/logout')
@@ -169,11 +136,7 @@ def trip_profile(trip_id, location):
 # def get_recs():
 #     """Search Yelp for trip recommendations"""
 
-#     term = request.args.get("term")
-
-#     search database
-
-#     return jsonify(results)
+#     return redirect("/trip_profile/<trip-id>/<location>")
 
 
 if __name__ == "__main__":

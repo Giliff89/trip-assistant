@@ -86,8 +86,7 @@ class Activity(db.Model):
     name = db.Column(db.String(80), nullable=False)
     rating = db.Column(db.Float, nullable=True)
     yelp = db.Column(db.String(256), nullable=False)
-    yelp_business_id = db.Column(db.String(256), nullable=False)
-    website = db.Column(db.String(256), nullable=True)
+    business_id = db.Column(db.String(256), nullable=False)
 
 
 class Restaurant(db.Model):
@@ -104,8 +103,7 @@ class Restaurant(db.Model):
     name = db.Column(db.String(80), nullable=False)
     rating = db.Column(db.Float, nullable=True)
     yelp = db.Column(db.String(256), nullable=False)
-    yelp_business_id = db.Column(db.String(256), nullable=False)
-    website = db.Column(db.String(256), nullable=True)
+    business_id = db.Column(db.String(256), nullable=False)
 
 
 def connect_to_db(app):
