@@ -20,11 +20,10 @@ class User(db.Model):
                          unique=True,
                          nullable=False)
     password = db.Column(db.String(32), nullable=False)
-    term_1 = db.Column(db.String(30), nullable=True)
-    term_2 = db.Column(db.String(30), nullable=True)
-    term_3 = db.Column(db.String(30), nullable=True)
-    term_4 = db.Column(db.String(30), nullable=True)
-    term_5 = db.Column(db.String(30), nullable=True)
+
+    # Add in a term table for personalization later
+
+    # For number indicating string length, assign to a constant to give context
 
 
 class Trip(db.Model):
@@ -44,32 +43,39 @@ class Trip(db.Model):
 
     user = db.relationship('User', backref=db.backref('trips'))
 
+# Make 2 association tables, one for restaurant and one for activity
 
-class Recommendation(db.Model):
-    """One day of recommendations for a trip."""
+# Association table
+# Instead, make this connection take in a restaurant or activity id, and link it to a trip id.
+# class Recommendation(db.Model):
+#     """One day of recommendations for a trip."""
 
-    __tablename__ = "recommendations"
+#     __tablename__ = "recommendations"
 
-    rec_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    trip_id = db.Column(db.Integer,
-                        db.ForeignKey('trips.trip_id'),
-                        nullable=False)
-    restaurant_id = db.Column(db.Integer,
-                              db.ForeignKey('restaurants.restaurant_id'),
-                              nullable=False)
-    activity_id = db.Column(db.Integer,
-                            db.ForeignKey('activities.activity_id'),
-                            nullable=False)
-    day_num = db.Column(db.Integer, nullable=True)
+#     rec_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+#     trip_id = db.Column(db.Integer,
+#                         db.ForeignKey('trips.trip_id'),
+#                         nullable=False)
+    # restaurant_id = db.Column(db.Integer,
+    #                           db.ForeignKey('restaurants.restaurant_id'),
+    #                           nullable=False)
+    # activity_id = db.Column(db.Integer,
+    #                         db.ForeignKey('activities.activity_id'),
+    #                         nullable=False)
 
-    trip = db.relationship('Trip', backref=db.backref('recommendations'))
+    # trip = db.relationship('Trip', backref=db.backref('recommendations'))
 
-    restaurant = db.relationship('Restaurant',
-                                 foreign_keys=[restaurant_id],
-                                 backref=db.backref('recommendation'))
-    activity = db.relationship('Activity',
-                               foreign_keys=[activity_id],
-                               backref=db.backref('recommendation'))
+    # restaurant = db.relationship('Restaurant',
+    #                              foreign_keys=[restaurant_id],
+    #                              backref=db.backref('recommendation'))
+    # activity = db.relationship('Activity',
+    #                            foreign_keys=[activity_id],
+    #                            backref=db.backref('recommendation'))
+
+    # Rather than have a rec table linking the recs to trips, have an association table that
+    # will allow me to save the trip_id and rec_id each time a button is pressed.
+
+# Can join the shared data on these two tables, have activity specific data in activity table
 
 
 class Activity(db.Model):
@@ -80,13 +86,13 @@ class Activity(db.Model):
     activity_id = db.Column(db.Integer,
                             autoincrement=True,
                             primary_key=True)
-    rec_id = db.Column(db.Integer,
-                       db.ForeignKey('recommendations.rec_id'),
-                       nullable=False)
     name = db.Column(db.String(80), nullable=False)
     rating = db.Column(db.Float, nullable=True)
+    location = db.Column(db.String(80), nullable=False)
     yelp = db.Column(db.String(256), nullable=False)
     business_id = db.Column(db.String(256), nullable=False)
+
+    # Add access methods and queries in here
 
 
 class Restaurant(db.Model):
@@ -97,13 +103,13 @@ class Restaurant(db.Model):
     restaurant_id = db.Column(db.Integer,
                               autoincrement=True,
                               primary_key=True)
-    rec_id = db.Column(db.Integer,
-                       db.ForeignKey('recommendations.rec_id'),
-                       nullable=False)
     name = db.Column(db.String(80), nullable=False)
     rating = db.Column(db.Float, nullable=True)
+    location = db.Column(db.String(80), nullable=False)
     yelp = db.Column(db.String(256), nullable=False)
     business_id = db.Column(db.String(256), nullable=False)
+
+# Can separate each table into a new document with methods associated with that table
 
 
 def connect_to_db(app):
