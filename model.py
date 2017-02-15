@@ -94,6 +94,7 @@ class Activity(db.Model):
 
     # Add access methods and queries in here
 
+# Testing out github branching!
 
 class Restaurant(db.Model):
     """Single restaurant recommendation."""
