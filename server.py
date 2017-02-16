@@ -1,12 +1,11 @@
 from jinja2 import StrictUndefined
 
-from flask import (Flask, render_template, redirect, request, flash,
-                   session)
+from flask import (Flask, render_template, redirect, request, flash, session)
 from flask_debugtoolbar import DebugToolbarExtension
 
-from funcs import check_user, check_login
+from funcs import check_user, check_login  # get_activities, get_restaurants
 from model import db, connect_to_db
-from model import User, Trip, Recommendation, Activity, Restaurant
+from model import User, Trip, Activity, Restaurant  # Recommendation
 
 app = Flask(__name__)
 
@@ -118,6 +117,10 @@ def trip_profile(trip_id, location):
     """Displays trip information and recommendations for user's specific trip"""
 
     trip = Trip.query.get(trip_id)
+
+    # get_activities(db, trip.location, trip.days)
+
+    # get_restaurants(db, trip.location, trip.days)
 
     return render_template('trip_page.html', trip=trip)
 
