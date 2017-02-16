@@ -1,11 +1,15 @@
 from jinja2 import StrictUndefined
 
-from flask import (Flask, render_template, redirect, request, flash, session)
+from flask import (Flask, render_template, redirect, request, flash, session, jsonify)
 from flask_debugtoolbar import DebugToolbarExtension
 
 from funcs import check_user, check_login  # get_activities, get_restaurants
 from model import db, connect_to_db
-from model import User, Trip, Activity, Restaurant  # Recommendation
+from model import User, Trip, Activity, Restaurant, RestaurantRec, ActivityRec
+
+# from seed import set_val_restaurant_rec_id, set_val_activity_rec_id
+
+import random
 
 app = Flask(__name__)
 
@@ -101,10 +105,9 @@ def user_trip():
         return render_template("add_trip.html")
     else:
         location = request.form['location']
-        num_days = request.form['days']
         user_id = session['user_id']
 
-        new_trip = Trip(location=location, days=num_days, user_id=user_id)
+        new_trip = Trip(location=location, user_id=user_id)
 
         db.session.add(new_trip)
         db.session.commit()
@@ -118,11 +121,64 @@ def trip_profile(trip_id, location):
 
     trip = Trip.query.get(trip_id)
 
-    # get_activities(db, trip.location, trip.days)
+    return render_template('trip_page.html',
+                           trip=trip)
 
-    # get_restaurants(db, trip.location, trip.days)
 
-    return render_template('trip_page.html', trip=trip)
+@app.route('/get_restaurant_rec', methods=['GET', 'POST'])
+def get_restaurant_rec():
+    """Show a restaurant recommendation for the users' trip"""
+
+    location = request.args.get("location")
+
+    rest_query = random.choice(db.session.query(Restaurant.name,
+                                                Restaurant.rating,
+                                                Restaurant.yelp).filter(
+        location == Restaurant.location).all())
+
+    return jsonify({"name": rest_query[0], "rating": rest_query[1], "yelp": rest_query[2]})
+
+    # set_val_restaurant_rec_id()
+
+    #     name = recommendation.name
+    #     rating = recommendation.rating
+    #     yelp = recommendation.yelp
+
+    #     new_rec = RestaurantRec(trip_id=trip_id,
+    #                             restaurant_id=recommendation.restaurant_id)
+
+    #     db.session.add(new_rec)
+    # db.session.commit()
+
+    # return recommendation
+
+
+@app.route('/get_activity_rec', methods=['GET', 'POST'])
+def get_activity_rec():
+    """Show an activity recommendation for the users' trip"""
+
+    location = request.args.get("location")
+
+    act_query = random.choice(db.session.query(Activity.name,
+                                               Activity.rating,
+                                               Activity.yelp).filter(
+        location == Activity.location).all())
+
+    return jsonify({"name": act_query[0], "rating": act_query[1], "yelp": act_query[2]})
+
+    # set_val_activity_rec_id()
+
+    #     name = recommendation.name
+    #     rating = recommendation.rating
+    #     yelp = recommendation.yelp
+
+    #     new_rec = ActivityRec(trip_id=trip_id,
+    #                             activity_id=recommendation.activity_id)
+
+    #     db.session.add(new_rec)
+    # db.session.commit()
+
+    # return recommendation
 
 
 if __name__ == "__main__":

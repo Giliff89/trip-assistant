@@ -3,42 +3,59 @@
 
 <script src="https://code.jquery.com/jquery.js"></script>
 
-<h2> Your trip to {{ trip.location }} for {{ trip.days }} days</h2>
+<h2> Your trip to <span id="trip_location">{{ trip.location }}</span></h2>
 
-<!-- {% if trip.recommendations %}
+<br>
 
-  {% for recommendation in trip.recommendations %} -->
+<!-- <p>
 
-  <!-- Look at breaking the recommendation down into the two separate pieces -->
+    <b>Your restaurant recommendations:</b>
 
-<!--   <p>
+    {% if trip.restaurants %}
+      {% for restaurant in trip.restaurants %}
 
-    <b>Your recommendations:</b>
+     {{ restaurant_name }}, {{ restaurant_rating }}
+      <a href='{{ restaurant_yelp }}'>Yelp page</a>
 
-     Restaurant name, rating
-         Restaurant Yelp page link -->
+      {% endfor %}
+    {% endif %}
 
-    <!-- Activity name, rating
-         Activity Yelp page link -->
-
-<!--   </p>
-
-  {% endfor %}
-
-{% endif %} --> 
+</p>
 
 <p>
+
+    <b>Your activity recommendations:</b>
+
+    {% if trip.activities %}
+      {% for activity in trip.activities %}
+
+     {{ activity_name }}, {{ activity_rating }}
+      <a href='{{ activity_yelp }}'>Yelp page</a>
+
+      {% endfor %}
+    {% endif %}
+
+  </p> -->
+ 
   <b>Get trip recommendations:</b>
-</p>
-
-<p>
- <button class="btn" id="restaurant_rec" type="submit">Recommend restaurants!</button>
-</p>
 
 <br>
 
 <p>
- <button class="btn" id="activity_rec" type="submit">Recommend activities!</button>
+ <button class="btn" id="restaurant_rec_button">Recommend restaurants!</button>
 </p>
+
+<div id="rest_rec_results"></div>
+
+<br>
+
+<p>
+ <button class="btn" id="activity_rec_button">Recommend activities!</button>
+</p>
+
+<div id="act_rec_results"></div>
+
+<script src="http://code.jquery.com/jquery.js"></script>
+<script src="/static/trip_assistant.js"></script>
 
 {% endblock %}

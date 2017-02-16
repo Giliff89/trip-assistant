@@ -16,7 +16,8 @@ client = Client(auth)
 
 # TODO - turn these functions into one, set up ajax to determine the term to use
 
-def get_restaurants(location, days):
+
+def get_restaurants(location, result_num):
     """Use Yelp API to get highly rated restaurants"""
 
     # the sort=2 gives the highest rated/reviewed restaurants
@@ -28,21 +29,13 @@ def get_restaurants(location, days):
 
     index = 0
 
-    while index < days:
-        # TODO - take out second unecessary code for dict
-        try:
-            restaurants[str(request.businesses[index].name)] = {"name": str(request.businesses[index].name),
-                                                                "rating": float(request.businesses[index].rating),
-                                                                "yelp": str(request.businesses[index].url),
-                                                                "business_id": str(request.businesses[index].id)}
-            index += 1
+    while index < result_num:
 
-        except UnicodeEncodeError:
-            restaurants[(request.businesses[index].name).encode('utf-8')] = {"name": (request.businesses[index].name).encode('utf-8'),
-                                                                             "rating": float(request.businesses[index].rating),
-                                                                             "yelp": str(request.businesses[index].url),
-                                                                             "business_id": (request.businesses[index].id).encode('utf-8')}
-            index += 1
+        restaurants[(request.businesses[index].name).encode('utf-8')] = {"name": (request.businesses[index].name).encode('utf-8'),
+                                                                         "rating": float(request.businesses[index].rating),
+                                                                         "yelp": (request.businesses[index].url).encode('utf-8'),
+                                                                         "business_id": (request.businesses[index].id).encode('utf-8')}
+        index += 1
 
     for business in restaurants:
 
@@ -61,7 +54,7 @@ def get_restaurants(location, days):
         db.session.commit()
 
 
-def get_activities(location, days):
+def get_activities(location, result_num):
     """Use Yelp API to get highly rated activities"""
 
     # the sort=2 gives the highest rated/reviewed activities
@@ -73,12 +66,12 @@ def get_activities(location, days):
 
     index = 0
 
-    while index < days:
+    while index < result_num:
         # TODO - add in .encode()
-        activities[str(request.businesses[index].name)] = {"name": str(request.businesses[index].name),
-                                                           "rating": float(request.businesses[index].rating),
-                                                           "yelp": str(request.businesses[index].url),
-                                                           "business_id": str(request.businesses[index].id)}
+        activities[(request.businesses[index].name).encode('utf-8')] = {"name": (request.businesses[index].name).encode('utf-8'),
+                                                                        "rating": float(request.businesses[index].rating),
+                                                                        "yelp": (request.businesses[index].url).encode('utf-8'),
+                                                                        "business_id": (request.businesses[index].id).encode('utf-8')}
         index += 1
 
     for business in activities:
