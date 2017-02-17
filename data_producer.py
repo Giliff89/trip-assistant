@@ -56,6 +56,8 @@ def get_restaurants(location, result_num):
         db.session.add(new_restaurant)
     db.session.commit()
 
+        # print new_restaurant.name
+
 
 def get_activities(location, result_num):
     """Use Yelp API to get highly rated activities"""
@@ -89,6 +91,8 @@ def get_activities(location, result_num):
                                 location=location,
                                 yelp=yelp,
                                 business_id=business_id)
+
+        print new_activity.name
 
         db.session.add(new_activity)
     db.session.commit()

@@ -96,44 +96,44 @@ def load_restaurants():
     db.session.commit()
 
 
-def load_restaurant_recs():
-    """Load resaturant recs into database"""
+# def load_restaurant_recs():
+#     """Load restaurant recs into database"""
 
-    print "Restaurant recommendations loading"
+#     print "Restaurant recommendations loading"
 
-    RestaurantRec.query.delete()
+#     RestaurantRec.query.delete()
 
-    for row in open("seed_data/restaurant_recs.csv"):
-        row = row.rstrip()
-        rest_rec_id, trip_id, restaurant_id = row.split(",")
+#     for row in open("seed_data/restaurant_recs.csv"):
+#         row = row.rstrip()
+#         rest_rec_id, trip_id, restaurant_id = row.split(",")
 
-        rest_rec = RestaurantRec(rest_rec_id=rest_rec_id,
-                                 trip_id=trip_id,
-                                 restaurant_id=restaurant_id)
+#         rest_rec = RestaurantRec(rest_rec_id=rest_rec_id,
+#                                  trip_id=trip_id,
+#                                  restaurant_id=restaurant_id)
 
-        db.session.add(rest_rec)
+#         db.session.add(rest_rec)
 
-    db.session.commit()
+#     db.session.commit()
 
 
-def load_activity_recs():
-    """Load activity recs into database"""
+# def load_activity_recs():
+#     """Load activity recs into database"""
 
-    print "Activity recommendations loading"
+#     print "Activity recommendations loading"
 
-    ActivityRec.query.delete()
+#     ActivityRec.query.delete()
 
-    for row in open("seed_data/activity_recs.csv"):
-        row = row.rstrip()
-        act_rec_id, trip_id, activity_id = row.split(",")
+#     for row in open("seed_data/activity_recs.csv"):
+#         row = row.rstrip()
+#         act_rec_id, trip_id, activity_id = row.split(",")
 
-        act_rec = ActivityRec(act_rec_id=act_rec_id,
-                              trip_id=trip_id,
-                              activity_id=activity_id)
+#         act_rec = ActivityRec(act_rec_id=act_rec_id,
+#                               trip_id=trip_id,
+#                               activity_id=activity_id)
 
-        db.session.add(act_rec)
+#         db.session.add(act_rec)
 
-    db.session.commit()
+#     db.session.commit()
 
 
 def set_val_user_id():
@@ -213,11 +213,11 @@ if __name__ == "__main__":
     load_trips()
     load_activities()
     load_restaurants()
-    load_restaurant_recs()
-    load_activity_recs()
+    # load_restaurant_recs()
+    # load_activity_recs()
     set_val_user_id()
     set_val_trip_id()
     set_val_restaurant_id()
     set_val_activity_id()
-    set_val_restaurant_rec_id()
-    set_val_activity_rec_id()
+    # set_val_restaurant_rec_id()
+    # set_val_activity_rec_id()
