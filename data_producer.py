@@ -8,8 +8,10 @@ from yelp.oauth1_authenticator import Oauth1Authenticator
 
 from server import app
 
-from model import User, Trip, Activity, Restaurant  # Recommendation
+from model import User, Trip, Activity, Restaurant
 from model import db, connect_to_db
+
+from seed import set_val_restaurant_id, set_val_activity_id
 
 cred = open('config_secret.json').read()
 creds = json.loads(cred)
@@ -17,10 +19,10 @@ auth = Oauth1Authenticator(**creds)
 client = Client(auth)
 
 
-def get_restaurants(location, days):
+def get_restaurants(location, result_num):
     """Use Yelp API to get highly rated restaurants"""
 
-    params = {"term": "food", "sort": "2"}
+    params = {"term": "food", "sort": "2", "offset": "20"}
 
     request = client.search(location, **params)
 
@@ -28,20 +30,15 @@ def get_restaurants(location, days):
 
     index = 0
 
-    while index < days:
-        try:
-            restaurants[str(request.businesses[index].name)] = {"name": str(request.businesses[index].name),
-                                                                "rating": float(request.businesses[index].rating),
-                                                                "yelp": str(request.businesses[index].url),
-                                                                "business_id": str(request.businesses[index].id)}
-            index += 1
+    while index < result_num:
 
-        except UnicodeEncodeError:
-            restaurants[(request.businesses[index].name).encode('utf-8')] = {"name": (request.businesses[index].name).encode('utf-8'),
-                                                                             "rating": float(request.businesses[index].rating),
-                                                                             "yelp": str(request.businesses[index].url),
-                                                                             "business_id": (request.businesses[index].id).encode('utf-8')}
-            index += 1
+        restaurants[(request.businesses[index].name).encode('utf-8')] = {"name": (request.businesses[index].name).encode('utf-8'),
+                                                                         "rating": float(request.businesses[index].rating),
+                                                                         "yelp": (request.businesses[index].url).encode('utf-8'),
+                                                                         "business_id": (request.businesses[index].id).encode('utf-8')}
+        index += 1
+
+        set_val_restaurant_id()
 
     for business in restaurants:
 
@@ -57,13 +54,13 @@ def get_restaurants(location, days):
                                     business_id=business_id)
 
         db.session.add(new_restaurant)
-        db.session.commit()
+    db.session.commit()
 
 
-def get_activities(location, days):
+def get_activities(location, result_num):
     """Use Yelp API to get highly rated activities"""
 
-    params = {"term": "activity", "sort": "2"}
+    params = {"term": "activity", "sort": "2", "offset": "20"}
 
     request = client.search(location, **params)
 
@@ -71,12 +68,14 @@ def get_activities(location, days):
 
     index = 0
 
-    while index < days:
-        activities[str(request.businesses[index].name)] = {"name": str(request.businesses[index].name),
-                                                           "rating": float(request.businesses[index].rating),
-                                                           "yelp": str(request.businesses[index].url),
-                                                           "business_id": str(request.businesses[index].id)}
+    while index < result_num:
+        activities[(request.businesses[index].name).encode('utf-8')] = {"name": (request.businesses[index].name).encode('utf-8'),
+                                                                        "rating": float(request.businesses[index].rating),
+                                                                        "yelp": (request.businesses[index].url).encode('utf-8'),
+                                                                        "business_id": (request.businesses[index].id).encode('utf-8')}
         index += 1
+
+        set_val_activity_id()
 
     for business in activities:
 
@@ -92,7 +91,7 @@ def get_activities(location, days):
                                 business_id=business_id)
 
         db.session.add(new_activity)
-        db.session.commit()
+    db.session.commit()
 
 
 connect_to_db(app)

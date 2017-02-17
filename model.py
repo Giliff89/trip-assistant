@@ -23,8 +23,6 @@ class User(db.Model):
 
     # Add in a term table for personalization later
 
-    # For number indicating string length, assign to a constant to give context
-
 
 class Trip(db.Model):
     """Trip information which maps to user_id."""
@@ -37,45 +35,17 @@ class Trip(db.Model):
     user_id = db.Column(db.Integer,
                         db.ForeignKey('users.user_id'),
                         nullable=False)
-    days = db.Column(db.Integer, nullable=False)
+    days = db.Column(db.Integer, nullable=True)
     location = db.Column(db.String(128), nullable=False)
     # location as a city for Yelp search capability
 
     user = db.relationship('User', backref=db.backref('trips'))
 
-# Make 2 association tables, one for restaurant and one for activity
+    activities = db.relationship("Activity",
+                                 secondary="activity_recs")
 
-# Association table
-# Instead, make this connection take in a restaurant or activity id, and link it to a trip id.
-# class Recommendation(db.Model):
-#     """One day of recommendations for a trip."""
-
-#     __tablename__ = "recommendations"
-
-#     rec_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-#     trip_id = db.Column(db.Integer,
-#                         db.ForeignKey('trips.trip_id'),
-#                         nullable=False)
-    # restaurant_id = db.Column(db.Integer,
-    #                           db.ForeignKey('restaurants.restaurant_id'),
-    #                           nullable=False)
-    # activity_id = db.Column(db.Integer,
-    #                         db.ForeignKey('activities.activity_id'),
-    #                         nullable=False)
-
-    # trip = db.relationship('Trip', backref=db.backref('recommendations'))
-
-    # restaurant = db.relationship('Restaurant',
-    #                              foreign_keys=[restaurant_id],
-    #                              backref=db.backref('recommendation'))
-    # activity = db.relationship('Activity',
-    #                            foreign_keys=[activity_id],
-    #                            backref=db.backref('recommendation'))
-
-    # Rather than have a rec table linking the recs to trips, have an association table that
-    # will allow me to save the trip_id and rec_id each time a button is pressed.
-
-# Can join the shared data on these two tables, have activity specific data in activity table
+    restaurants = db.relationship("Restaurant",
+                                  secondary="restaurant_recs")
 
 
 class Activity(db.Model):
@@ -92,7 +62,8 @@ class Activity(db.Model):
     yelp = db.Column(db.String(256), nullable=False)
     business_id = db.Column(db.String(256), nullable=False)
 
-    # Add access methods and queries in here
+    trips = db.relationship("Trip",
+                            secondary="activity_recs")
 
 
 class Restaurant(db.Model):
@@ -109,7 +80,44 @@ class Restaurant(db.Model):
     yelp = db.Column(db.String(256), nullable=False)
     business_id = db.Column(db.String(256), nullable=False)
 
-# Can separate each table into a new document with methods associated with that table
+    trips = db.relationship("Trip",
+                            secondary="restaurant_recs")
+
+
+# Association table for restaurant recommendations to trip
+class RestaurantRec(db.Model):
+    """One restaurant recommendation for a trip."""
+
+    __tablename__ = "restaurant_recs"
+
+    rest_rec_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    trip_id = db.Column(db.Integer,
+                        db.ForeignKey('trips.trip_id'),
+                        nullable=False)
+    restaurant_id = db.Column(db.Integer,
+                              db.ForeignKey('restaurants.restaurant_id'),
+                              nullable=False)
+
+    trip = db.relationship("Trip", backref=db.backref("restaurant_assoc"))
+    restaurant = db.relationship("Restaurant", backref=db.backref("trip_assoc"))
+
+
+# Association table for activity recommendations to trip
+class ActivityRec(db.Model):
+    """One activity recommendation for a trip."""
+
+    __tablename__ = "activity_recs"
+
+    act_rec_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    trip_id = db.Column(db.Integer,
+                        db.ForeignKey('trips.trip_id'),
+                        nullable=False)
+    activity_id = db.Column(db.Integer,
+                            db.ForeignKey('activities.activity_id'),
+                            nullable=False)
+
+    trip = db.relationship("Trip", backref=db.backref("activity_assoc"))
+    activity = db.relationship("Activity", backref=db.backref("trip_assoc"))
 
 
 def connect_to_db(app):

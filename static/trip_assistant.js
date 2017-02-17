@@ -1,24 +1,39 @@
 "use strict";
 
-
-function rec_restaurant(evt) {
-    evt.preventDefault();
-
-    // var rec = ;
-
-    // $.post(rec, );
+function getRestRec(results) {
+    $("#rest_rec_results").html("<div>" + "Restaurant name: " +
+        results["name"] + "<br>" + "Yelp rating: " + results["rating"] +
+        "<br>" + "<a href=" + results["yelp"]+ ">Yelp page</a>" + "</div>");
 }
 
-// Add in a function to call the query, need to add in randomized choice here.
 
-function rec_activity(evt) {
+function recRestaurant(evt) {
     evt.preventDefault();
 
-    // var rec = ;
+    var url = '/get_restaurant_rec';
+    var location = $("#trip_location").text();
 
-    // $.post(rec, );
+    $.get(url, {"location": location}, getRestRec);
 }
 
-$("#restaurant_rec").on('submit', rec_restaurant);
+$('button#restaurant_rec_button').on('click', recRestaurant);
 
-$("#ractivity_rec").on('submit', rec_activity);
+
+function getActRec(results) {
+    $("#act_rec_results").html("<div>" + "Activity name: " +
+        results["name"] + "<br>" + "Yelp rating: " + results["rating"] +
+        "<br>" + "<a href=" + results["yelp"]+ ">Yelp page</a>" + "</div>");
+}
+
+
+function recActivity(evt) {
+    evt.preventDefault();
+
+    var url = '/get_activity_rec';
+    var location = $("#trip_location").text();
+
+    $.get(url, {"location": location}, getActRec);
+}
+
+$('button#activity_rec_button').on('click', recActivity);
+
