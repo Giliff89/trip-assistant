@@ -1,0 +1,12 @@
+
+body {
+    padding: 20px;
+}
+
+#rest-save { 
+  display:none;
+}
+
+#act-save { 
+  display:none;
+}

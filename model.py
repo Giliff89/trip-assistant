@@ -53,6 +53,11 @@ class Activity(db.Model):
 
     __tablename__ = "activities"
 
+    def __repr__(self):
+        """Provide helpful representation when printed."""
+
+        return "<Activity activity_id=%s name=%s>" % (self.activity_id, self.name)
+
     activity_id = db.Column(db.Integer,
                             autoincrement=True,
                             primary_key=True)
@@ -70,6 +75,11 @@ class Restaurant(db.Model):
     """Single restaurant recommendation."""
 
     __tablename__ = "restaurants"
+
+    def __repr__(self):
+        """Provide helpful representation when printed."""
+
+        return "<Restaurant restaurant_id=%s name=%s>" % (self.restaurant_id, self.name)
 
     restaurant_id = db.Column(db.Integer,
                               autoincrement=True,

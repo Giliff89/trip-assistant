@@ -2,58 +2,69 @@
 {% block content %}
 
 <script src="https://code.jquery.com/jquery.js"></script>
+<link rel="stylesheet" href="/static/loader.css">
 
-<h2> Your trip to <span id="trip_location">{{ trip.location }}</span></h2>
-
-<br>
-
-<!-- <p>
-
-    <b>Your restaurant recommendations:</b>
-
-    {% if trip.restaurants %}
-      {% for restaurant in trip.restaurants %}
-
-     {{ restaurant_name }}, {{ restaurant_rating }}
-      <a href='{{ restaurant_yelp }}'>Yelp page</a>
-
-      {% endfor %}
-    {% endif %}
-
-</p>
-
-<p>
-
-    <b>Your activity recommendations:</b>
-
-    {% if trip.activities %}
-      {% for activity in trip.activities %}
-
-     {{ activity_name }}, {{ activity_rating }}
-      <a href='{{ activity_yelp }}'>Yelp page</a>
-
-      {% endfor %}
-    {% endif %}
-
-  </p> -->
- 
-  <b>Get trip recommendations:</b>
+<div class="page_head">
+  <h2> Your trip to <span id="trip_location">{{ trip.location }}</span></h2>
+  <span id="trip_id" style="display: none;">{{ trip.trip_id }}</span>
+</div>
 
 <br>
 
+<span class="rec_head"><b>Get trip recommendations:</b></span>
+
+<br>
+<br>
+
+<div id="loadingDiv">
+  <br>
+  <div class="cssload-main">
+    <div class="cssload-heart">
+      <span class="cssload-heartL"></span>
+      <span class="cssload-heartR"></span>
+      <span class="cssload-square"></span>
+    </div>
+    <div class="cssload-shadow"></div>
+  </div>
+</div>
+
 <p>
- <button class="btn" id="restaurant_rec_button">Recommend restaurants!</button>
+  <button class="btn" id="restaurant_rec_button">
+    Recommend restaurants!
+  </button>
 </p>
 
 <div id="rest_rec_results"></div>
+<span id="rest_business_id" style="display: none;"></span>
+
+<br>
+
+<div class="save-button" id="rest-save">
+  <button class="save_rec_button" id="save_rest_rec">
+    Save this recommendation
+  </button>
+</div>
+<span id="rest_rec_saved" style="display: none;">Your recommendation has been saved</span>
 
 <br>
 
 <p>
- <button class="btn" id="activity_rec_button">Recommend activities!</button>
+  <button class="btn" id="activity_rec_button">
+    Recommend activities!
+  </button>
 </p>
 
 <div id="act_rec_results"></div>
+<span id="act_business_id" style="display: none;"></span>
+
+<br>
+
+<div class="save-button" id="act-save">
+  <button class="save_rec_button" id="save_act_rec">
+    Save this recommendation
+  </button>
+</div>
+<span id="act_rec_saved" style="display: none;">Your recommendation has been saved</span>
 
 <script src="http://code.jquery.com/jquery.js"></script>
 <script src="/static/trip_assistant.js"></script>

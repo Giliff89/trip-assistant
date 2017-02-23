@@ -6,81 +6,109 @@ import json
 from yelp.client import Client
 from yelp.oauth1_authenticator import Oauth1Authenticator
 
-from model import User, Activity, Restaurant  # Recommendation, Trip
+from model import User, Activity, Restaurant, RestaurantRec, ActivityRec
 from model import db, connect_to_db
+
+import random
 
 cred = open('config_secret.json').read()
 creds = json.loads(cred)
 auth = Oauth1Authenticator(**creds)
 client = Client(auth)
 
-# TODO - turn these functions into one, set up ajax to determine the term to use
 
-
-def get_restaurants(location, result_num):
+def get_restaurant(location):
     """Use Yelp API to get highly rated restaurants"""
 
-    # the sort=2 gives the highest rated/reviewed restaurants
-    params = {"term": "food", "sort": "2"}
+    params = {"term": "food", "sort": "2", "limit": 40}
 
-    request = client.search(location, **params)
+    restaurants = client.search(location, **params)
 
-    restaurants = {}
+    results = {}
 
     index = 0
 
-    while index < result_num:
+    while index < 40:
 
-        restaurants[(request.businesses[index].name).encode('utf-8')] = {"name": (request.businesses[index].name).encode('utf-8'),
-                                                                         "rating": float(request.businesses[index].rating),
-                                                                         "yelp": (request.businesses[index].url).encode('utf-8'),
-                                                                         "business_id": (request.businesses[index].id).encode('utf-8')}
+        results[(restaurants.businesses[index].name).encode(
+            'utf-8')] = {"name": (restaurants.businesses[index].name).encode('utf-8'),
+                         "rating": float(restaurants.businesses[index].rating),
+                         "yelp": (restaurants.businesses[index].url).encode('utf-8'),
+                         "business_id": (restaurants.businesses[index].id).encode('utf-8')}
         index += 1
 
-    for business in restaurants:
+    restaurant = random.choice(results.keys())
 
-        name = restaurants[business]["name"]
-        rating = restaurants[business]["rating"]
-        yelp = restaurants[business]["yelp"]
-        business_id = restaurants[business]["business_id"]
+    name = results[restaurant]["name"]
+    rating = results[restaurant]["rating"]
+    yelp = results[restaurant]["yelp"]
 
-        new_restaurant = Restaurant(name=name,
-                                    rating=rating,
-                                    location=location,
-                                    yelp=yelp,
-                                    business_id=business_id)
+    business_id = results[restaurant]["business_id"]
 
-        db.session.add(new_restaurant)
-        db.session.commit()
+    result = [name, rating, yelp, business_id]
+
+    return result
 
 
-def get_activities(location, result_num):
+def get_activity(location):
     """Use Yelp API to get highly rated activities"""
 
-    # the sort=2 gives the highest rated/reviewed activities
-    params = {"term": "activity", "sort": "2"}
+    params = {"term": "activity", "sort": "2", "limit": 40}
 
-    request = client.search(location, **params)
+    activities = client.search(location, **params)
 
-    activities = {}
+    results = {}
 
     index = 0
 
-    while index < result_num:
-        # TODO - add in .encode()
-        activities[(request.businesses[index].name).encode('utf-8')] = {"name": (request.businesses[index].name).encode('utf-8'),
-                                                                        "rating": float(request.businesses[index].rating),
-                                                                        "yelp": (request.businesses[index].url).encode('utf-8'),
-                                                                        "business_id": (request.businesses[index].id).encode('utf-8')}
+    while index < 40:
+
+        results[(activities.businesses[index].name).encode(
+            'utf-8')] = {"name": (activities.businesses[index].name).encode('utf-8'),
+                         "rating": float(activities.businesses[index].rating),
+                         "yelp": (activities.businesses[index].url).encode('utf-8'),
+                         "business_id": (activities.businesses[index].id).encode('utf-8')}
         index += 1
 
-    for business in activities:
+    activity = random.choice(results.keys())
 
-        name = activities[business]["name"]
-        rating = activities[business]["rating"]
-        yelp = activities[business]["yelp"]
-        business_id = activities[business]["business_id"]
+    name = results[activity]["name"]
+    rating = results[activity]["rating"]
+    yelp = results[activity]["yelp"]
+    business_id = results[activity]["business_id"]
 
+    result = [name, rating, yelp, business_id]
+
+    return result
+
+
+def add_act_rec_to_db(activity_id, trip_id):
+    """Add the activity to the ActivityRec table under users' trip_id"""
+
+    saved_rec = ActivityRec(activity_id=activity_id,
+                            trip_id=trip_id)
+
+    db.session.add(saved_rec)
+    db.session.commit()
+
+
+def add_rest_rec_to_db(restaurant_id, trip_id):
+    """Add the restaurant to the RestaurantRec table under users' trip_id"""
+
+    saved_rec = RestaurantRec(restaurant_id=restaurant_id,
+                              trip_id=trip_id)
+
+    db.session.add(saved_rec)
+    db.session.commit()
+
+
+def confirm_activity_in_db(name, rating, location, yelp, business_id):
+    """Check to see if a rec is saved in the Activity table, and add if not"""
+
+    try:
+        db.session.query(Activity.activity_id).filter_by(business_id=business_id).one()
+
+    except:
         new_activity = Activity(name=name,
                                 rating=rating,
                                 location=location,
@@ -88,6 +116,23 @@ def get_activities(location, result_num):
                                 business_id=business_id)
 
         db.session.add(new_activity)
+        db.session.commit()
+
+
+def confirm_restaurant_in_db(name, rating, location, yelp, business_id):
+    """Check to see if a rec is saved in the Restaurant table, and add if not"""
+
+    try:
+        db.session.query(Restaurant.restaurant_id).filter_by(business_id=business_id).one()
+
+    except:
+        new_restaurant = Restaurant(name=name,
+                                    rating=rating,
+                                    location=location,
+                                    yelp=yelp,
+                                    business_id=business_id)
+
+        db.session.add(new_restaurant)
         db.session.commit()
 
 

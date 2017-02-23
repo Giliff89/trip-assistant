@@ -3,13 +3,10 @@ from jinja2 import StrictUndefined
 from flask import (Flask, render_template, redirect, request, flash, session, jsonify)
 from flask_debugtoolbar import DebugToolbarExtension
 
-from funcs import check_user, check_login  # get_activities, get_restaurants
+import funcs
+
 from model import db, connect_to_db
-from model import User, Trip, Activity, Restaurant, RestaurantRec, ActivityRec
-
-# from seed import set_val_restaurant_rec_id, set_val_activity_rec_id
-
-import random
+from model import User, Trip, Activity, Restaurant
 
 app = Flask(__name__)
 
@@ -42,10 +39,14 @@ def process_registration():
 
     new_user = User(username=username, password=password)
 
-    if check_user(username) is False:
+    if funcs.check_user(username) is False:
         db.session.add(new_user)
         db.session.commit()
-        return redirect('/')
+
+        session["user_id"] = new_user.user_id
+
+        flash("Logged in")
+        return redirect("/profile/%s" % new_user.user_id)
     else:
         flash('That username is taken, choose a new username or login')
         return redirect('/login')
@@ -131,26 +132,17 @@ def get_restaurant_rec():
 
     location = request.args.get("location")
 
-    rest_query = random.choice(db.session.query(Restaurant.name,
-                                                Restaurant.rating,
-                                                Restaurant.yelp).filter(
-        location == Restaurant.location).all())
+    restaurant = funcs.get_restaurant(location)
 
-    return jsonify({"name": rest_query[0], "rating": rest_query[1], "yelp": rest_query[2]})
+    name = restaurant[0]
+    rating = restaurant[1]
+    yelp = restaurant[2]
+    business_id = restaurant[3]
 
-    # set_val_restaurant_rec_id()
+    funcs.confirm_restaurant_in_db(name, rating, location, yelp, business_id)
 
-    #     name = recommendation.name
-    #     rating = recommendation.rating
-    #     yelp = recommendation.yelp
-
-    #     new_rec = RestaurantRec(trip_id=trip_id,
-    #                             restaurant_id=recommendation.restaurant_id)
-
-    #     db.session.add(new_rec)
-    # db.session.commit()
-
-    # return recommendation
+    return jsonify({"name": name, "rating": rating,
+                    "yelp": yelp, "business_id": business_id})
 
 
 @app.route('/get_activity_rec', methods=['GET', 'POST'])
@@ -159,26 +151,49 @@ def get_activity_rec():
 
     location = request.args.get("location")
 
-    act_query = random.choice(db.session.query(Activity.name,
-                                               Activity.rating,
-                                               Activity.yelp).filter(
-        location == Activity.location).all())
+    activity = funcs.get_activity(location)
 
-    return jsonify({"name": act_query[0], "rating": act_query[1], "yelp": act_query[2]})
+    name = activity[0]
+    rating = activity[1]
+    yelp = activity[2]
+    business_id = activity[3]
 
-    # set_val_activity_rec_id()
+    funcs.confirm_activity_in_db(name, rating, location, yelp, business_id)
 
-    #     name = recommendation.name
-    #     rating = recommendation.rating
-    #     yelp = recommendation.yelp
+    return jsonify({"name": name, "rating": rating,
+                    "yelp": yelp, "business_id": business_id})
 
-    #     new_rec = ActivityRec(trip_id=trip_id,
-    #                             activity_id=recommendation.activity_id)
 
-    #     db.session.add(new_rec)
-    # db.session.commit()
+@app.route('/save_rest_rec', methods=['POST'])
+def save_restaurant_rec_to_db():
+    """Ajax route to save restaurant recommendation to trip_id"""
 
-    # return recommendation
+    trip_id = request.form.get("trip_id")
+    business_id = request.form.get("business_id")
+
+    restaurant = db.session.query(Restaurant.restaurant_id).filter_by(business_id=business_id).all()
+
+    restaurant_id = restaurant[0][0]
+
+    funcs.add_rest_rec_to_db(restaurant_id, trip_id)
+
+    return jsonify({"trip_id": trip_id, "restaurant_id": restaurant_id})
+
+
+@app.route('/save_act_rec', methods=['POST'])
+def save_activity_rec_to_db():
+    """Ajax route to save activity recommendation to trip_id"""
+
+    trip_id = request.form.get("trip_id")
+    business_id = request.form.get("business_id")
+
+    activity = db.session.query(Activity.activity_id).filter_by(business_id=business_id).all()
+
+    activity_id = activity[0][0]
+
+    funcs.add_act_rec_to_db(activity_id, trip_id)
+
+    return jsonify({"trip_id": trip_id, "activity_id": activity_id})
 
 
 if __name__ == "__main__":
