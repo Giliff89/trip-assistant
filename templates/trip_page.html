@@ -9,6 +9,36 @@
   <span id="trip_id" style="display: none;">{{ trip.trip_id }}</span>
 </div>
 
+<div class="trip_recs">
+  <div class="saved_restaurant_recs">
+    {% if trip.restaurants %}
+      Your saved restaurant recommendations:
+      <br>
+      {% for restaurant in trip.restaurants %}
+        <li>
+          <a href='{{ restaurant.yelp }}'>{{ restaurant.name }}</a>
+        </li>
+      {% endfor %}
+    {% else %}
+      You don't currently have any restaurants recommendations
+    {% endif %}
+  </div>
+  <br>
+  <div class="saved_activity_recs">
+    {% if trip.activities %}
+      Your saved activity recommendations:
+      <br>
+      {% for activity in trip.activities %}
+        <li>
+          <a href='{{ activity.yelp }}'>{{ activity.name }}</a>
+        </li>
+      {% endfor %}
+    {% else %}
+      You don't currently have any activity recommendations
+    {% endif %}
+  </div>
+</div>
+
 <br>
 
 <span class="rec_head"><b>Get trip recommendations:</b></span>
