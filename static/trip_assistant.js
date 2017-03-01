@@ -1,14 +1,16 @@
 "use strict";
 
+var new_tab = 'target="_blank"';
 
 function getRestRec(results) {
     $("#rest_rec_results").html("<div>" + "Restaurant name: " +
         results["name"] + "<br>" + "Yelp rating: " + results["rating"] +
-        "<br>" + "<a href=" + results["yelp"]+ ">Yelp page</a>" + "</div>");
+        "<br>" + "<a href=" + results["yelp"]+ " " + new_tab + ">Yelp page</a>" +
+        "<br>" + results["categories"][0][0] + "</div>");
     $("#rest_business_id").html(results["business_id"]);
     $("#rest_rec_saved").hide();
     $("#rest-save").css("display","block");
-}
+} 
 
 
 function recRestaurant(evt) {
@@ -26,7 +28,8 @@ $('button#restaurant_rec_button').on('click', recRestaurant);
 function getActRec(results) {
     $("#act_rec_results").html("<div>" + "Activity name: " +
         results["name"] + "<br>" + "Yelp rating: " + results["rating"] +
-        "<br>" + "<a href=" + results["yelp"]+ ">Yelp page</a>" + "</div>");
+        "<br>" + "<a href=" + results["yelp"]+ " " + new_tab + ">Yelp page</a>" +
+        "<br>" + results["categories"][0][0] + "</div>");
     $("#act_business_id").html(results["business_id"]);
     $("#act_rec_saved").hide();
     $("#act-save").css("display","block");

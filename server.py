@@ -62,22 +62,23 @@ def user_login():
         username = request.form.get('username')
         password = request.form.get('password')
 
-        user = User.query.filter_by(username=username).first()
+        user = funcs.check_login(username, password)
 
-        if not user:
-            flash("There is no user by that username")
-            return redirect("/login")
+        if user is False:
+            user_in_db = funcs.check_user(username)
 
-        if user.password != password:
-            flash("the password does not match the username")
-            return redirect("/login")
+            if user_in_db is False:
+                flash("There is no user by that username")
+                return redirect("/login")
+            # If the username is in the db but doesn't match password
+            else:
+                flash("the password does not match the username")
+                return redirect("/login")
 
-        session["user_id"] = user.user_id
+        session["user_id"] = user
 
         flash("Logged in")
-        return redirect("/profile/%s" % user.user_id)
-
-        # Can condense this with check_user and check_login functions
+        return redirect("/profile/%s" % user)
 
 
 @app.route('/logout')
@@ -132,17 +133,21 @@ def get_restaurant_rec():
 
     location = request.args.get("location")
 
-    restaurant = funcs.get_restaurant(location)
+    term = "restaurant"
+
+    restaurant = funcs.get_recommendation(location, term)
 
     name = restaurant[0]
     rating = restaurant[1]
     yelp = restaurant[2]
     business_id = restaurant[3]
+    categories = restaurant[4]
 
     funcs.confirm_restaurant_in_db(name, rating, location, yelp, business_id)
 
     return jsonify({"name": name, "rating": rating,
-                    "yelp": yelp, "business_id": business_id})
+                    "yelp": yelp, "business_id": business_id,
+                    "categories": categories})
 
 
 @app.route('/get_activity_rec', methods=['GET', 'POST'])
@@ -151,17 +156,21 @@ def get_activity_rec():
 
     location = request.args.get("location")
 
-    activity = funcs.get_activity(location)
+    term = "activity"
+
+    activity = funcs.get_recommendation(location, term)
 
     name = activity[0]
     rating = activity[1]
     yelp = activity[2]
     business_id = activity[3]
+    categories = activity[4]
 
     funcs.confirm_activity_in_db(name, rating, location, yelp, business_id)
 
     return jsonify({"name": name, "rating": rating,
-                    "yelp": yelp, "business_id": business_id})
+                    "yelp": yelp, "business_id": business_id,
+                    "categories": categories})
 
 
 @app.route('/save_rest_rec', methods=['POST'])

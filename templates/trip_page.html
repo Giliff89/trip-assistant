@@ -16,7 +16,7 @@
       <br>
       {% for restaurant in trip.restaurants %}
         <li>
-          <a href='{{ restaurant.yelp }}'>{{ restaurant.name }}</a>
+          <a href='{{ restaurant.yelp }}' target="_blank">{{ restaurant.name }}</a>
         </li>
       {% endfor %}
     {% else %}
@@ -30,7 +30,7 @@
       <br>
       {% for activity in trip.activities %}
         <li>
-          <a href='{{ activity.yelp }}'>{{ activity.name }}</a>
+          <a href='{{ activity.yelp }}' target="_blank">{{ activity.name }}</a>
         </li>
       {% endfor %}
     {% else %}

@@ -17,45 +17,13 @@ auth = Oauth1Authenticator(**creds)
 client = Client(auth)
 
 
-def get_restaurant(location):
-    """Use Yelp API to get highly rated restaurants"""
+def get_recommendation(location, term):
+    """Use Yelp API to get highly rated recommendations"""
 
-    params = {"term": "food", "sort": "2", "limit": 40}
+    # the sort: 2 gives the highest rated options on Yelp
+    params = {"term": term, "sort": "2", "limit": 40}
 
-    restaurants = client.search(location, **params)
-
-    results = {}
-
-    index = 0
-
-    while index < 40:
-
-        results[(restaurants.businesses[index].name).encode(
-            'utf-8')] = {"name": (restaurants.businesses[index].name).encode('utf-8'),
-                         "rating": float(restaurants.businesses[index].rating),
-                         "yelp": (restaurants.businesses[index].url).encode('utf-8'),
-                         "business_id": (restaurants.businesses[index].id).encode('utf-8')}
-        index += 1
-
-    restaurant = random.choice(results.keys())
-
-    name = results[restaurant]["name"]
-    rating = results[restaurant]["rating"]
-    yelp = results[restaurant]["yelp"]
-
-    business_id = results[restaurant]["business_id"]
-
-    result = [name, rating, yelp, business_id]
-
-    return result
-
-
-def get_activity(location):
-    """Use Yelp API to get highly rated activities"""
-
-    params = {"term": "activity", "sort": "2", "limit": 40}
-
-    activities = client.search(location, **params)
+    recommendations = client.search(location, **params)
 
     results = {}
 
@@ -63,21 +31,24 @@ def get_activity(location):
 
     while index < 40:
 
-        results[(activities.businesses[index].name).encode(
-            'utf-8')] = {"name": (activities.businesses[index].name).encode('utf-8'),
-                         "rating": float(activities.businesses[index].rating),
-                         "yelp": (activities.businesses[index].url).encode('utf-8'),
-                         "business_id": (activities.businesses[index].id).encode('utf-8')}
+        results[(recommendations.businesses[index].name).encode(
+            'utf-8')] = {"name": (recommendations.businesses[index].name).encode('utf-8'),
+                         "rating": float(recommendations.businesses[index].rating),
+                         "yelp": (recommendations.businesses[index].url).encode('utf-8'),
+                         "business_id": (recommendations.businesses[index].id).encode('utf-8'),
+                         "categories": (recommendations.businesses[index].categories)}
         index += 1
 
-    activity = random.choice(results.keys())
+    recommendation = random.choice(results.keys())
 
-    name = results[activity]["name"]
-    rating = results[activity]["rating"]
-    yelp = results[activity]["yelp"]
-    business_id = results[activity]["business_id"]
+    name = results[recommendation]["name"]
+    rating = results[recommendation]["rating"]
+    yelp = results[recommendation]["yelp"]
 
-    result = [name, rating, yelp, business_id]
+    business_id = results[recommendation]["business_id"]
+    categories = results[recommendation]["categories"]
+
+    result = [name, rating, yelp, business_id, categories]
 
     return result
 
@@ -137,7 +108,13 @@ def confirm_restaurant_in_db(name, rating, location, yelp, business_id):
 
 
 def check_user(username):
-    """Comparing username in database to user entry."""
+    """Comparing username in database to user entry.
+
+    >>> check_user("LunaLiterally")
+    True
+    >>> check_user("NotaUsername")
+    False
+    """
 
     in_db = User.query.filter_by(username=username)
 
@@ -148,11 +125,25 @@ def check_user(username):
 
 
 def check_login(username, password):
-    """Comparing username and password in database to user entry."""
+    """Comparing username and password in database to user entry.
 
-    auth = User.query.filter_by(username=username, password=password)
+    >>> check_login("LunaLiterally", "isBestDog")
+    1
+    >>> check_login("Gina89", "Mypass")
+    6
+    >>> check_login("Thisisdefinitely", "notaUser")
+    False
+    """
 
-    if auth.all():
-        return auth.all().user_id
+    auth = User.query.filter_by(username=username, password=password).first()
+
+    if auth:
+        return auth.user_id
     else:
         return False
+
+
+if __name__ == "__main__":
+
+    from server import app
+    connect_to_db(app)

@@ -21,8 +21,6 @@ class User(db.Model):
                          nullable=False)
     password = db.Column(db.String(32), nullable=False)
 
-    # Add in a term table for personalization later
-
 
 class Trip(db.Model):
     """Trip information which maps to user_id."""
@@ -107,6 +105,10 @@ class RestaurantRec(db.Model):
     restaurant_id = db.Column(db.Integer,
                               db.ForeignKey('restaurants.restaurant_id'),
                               nullable=False)
+    # This column will save a value of 1, 2, or 3 to determine if a user likes,
+    # dislikes, or doesn't prefer a recommendation either way. This will be used
+    # for my Pearson correlation
+    rec_value = db.Column(db.Integer, nullable=False)
 
     trip = db.relationship("Trip", backref=db.backref("restaurant_assoc"))
     restaurant = db.relationship("Restaurant", backref=db.backref("trip_assoc"))
@@ -125,6 +127,10 @@ class ActivityRec(db.Model):
     activity_id = db.Column(db.Integer,
                             db.ForeignKey('activities.activity_id'),
                             nullable=False)
+    # This column will save a value of 1, 2, or 3 to determine if a user likes,
+    # dislikes, or doesn't prefer a recommendation either way. This will be used
+    # for my Pearson correlation
+    rec_value = db.Column(db.Integer, nullable=False)
 
     trip = db.relationship("Trip", backref=db.backref("activity_assoc"))
     activity = db.relationship("Activity", backref=db.backref("trip_assoc"))
@@ -137,6 +143,50 @@ def connect_to_db(app):
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.app = app
     db.init_app(app)
+
+
+def example_data():
+    """Create some sample data."""
+
+    user1 = User(username="Testuser", password="Testpass")
+    user2 = User(username="Love2go", password="Seetheworld25")
+    user3 = User(username="Tr!pping", password="world@large")
+
+    trip1 = Trip(user_id=1, location="San Francisco")
+    trip2 = Trip(user_id=3, location="Seattle")
+    trip3 = Trip(user_id=1, location="Los Angeles")
+    trip4 = Trip(user_id=2, location="Kona")
+
+    act1 = Activity(name="Funtime", rating=5, location="Seattle",
+                    yelp="www.funtime-seattle.com", business_id="Funtime-Seattle")
+    act2 = Activity(name="Boredomtherapy", rating=4.5, location="San Francisco",
+                    yelp="www.boredometherapysf.com", business_id="Boredom-therapy-SF")
+    act3 = Activity(name="Pasta and Paint", rating=5, location="Kona",
+                    yelp="www.pastaandpaintkona.com", business_id="Pasta-and-Paint-Kona")
+    act4 = Activity(name="Filmsnfun", rating=4, location="Los Angeles",
+                    yelp="www.filmsnfun-la.com", business_id="Films-n-fun-LA")
+
+    rest1 = Restaurant(name="Nom nomz", rating=5, location="Kona",
+                       yelp="www.nomnomzkona.com", business_id="Nom-nomz-Kona")
+    rest2 = Restaurant(name="Yummy Time", rating=4.5, location="San Francisco",
+                       yelp="www.yummytimesf.com", business_id="Yummy-Time-SF")
+    rest3 = Restaurant(name="Good Stuff", rating=4, location="Los Angeles",
+                       yelp="www.goodstufffoodla.com", business_id="Good-Stuff-LA")
+    rest4 = Restaurant(name="Eat This", rating=4.5, location="Seattle",
+                       yelp="www.eatthisseattle.com", business_id="Eat-This-Seattle")
+
+    act_rec1 = ActivityRec(trip_id=1, activity_id=2)
+    act_rec2 = ActivityRec(trip_id=2, activity_id=1)
+    act_rec3 = ActivityRec(trip_id=4, activity_id=3)
+
+    rest_rec1 = RestaurantRec(trip_id=2, restaurant_id=4)
+    rest_rec2 = RestaurantRec(trip_id=3, restaurant_id=3)
+    rest_rec3 = RestaurantRec(trip_id=4, restaurant_id=1)
+
+    db.session.add_all([user1, user2, user3, trip1, trip2, trip3, trip4, act1,
+                        act2, act3, act4, rest1, rest2, rest3, rest4, act_rec1,
+                        act_rec2, act_rec3, rest_rec1, rest_rec2, rest_rec3])
+    db.session.commit()
 
 
 if __name__ == "__main__":
