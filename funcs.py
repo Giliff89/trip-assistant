@@ -13,47 +13,14 @@ import random
 
 from scikits.crab.models import MatrixPreferenceDataModel
 from scikits.crab.recommenders.knn import UserBasedRecommender
+from scikits.crab.metrics import pearson_correlation
+from scikits.crab.similarities import UserSimilarity
 
 cred = open('config_secret.json').read()
 creds = json.loads(cred)
 auth = Oauth1Authenticator(**creds)
 client = Client(auth)
 
-
-# def get_recommendation(location, term):
-#     """Use Yelp API to get highly rated recommendations"""
-
-#     # the sort: 2 gives the highest rated options on Yelp
-#     params = {"term": term, "sort": "2", "limit": 40}
-
-#     recommendations = client.search(location, **params)
-
-#     results = {}
-
-#     index = 0
-
-#     while index < 40:
-
-#         results[(recommendations.businesses[index].name).encode(
-#             'utf-8')] = {"name": (recommendations.businesses[index].name).encode('utf-8'),
-#                          "rating": float(recommendations.businesses[index].rating),
-#                          "yelp": (recommendations.businesses[index].url).encode('utf-8'),
-#                          "business_id": (recommendations.businesses[index].id).encode('utf-8'),
-#                          "categories": (recommendations.businesses[index].categories)}
-#         index += 1
-
-#     recommendation = random.choice(results.keys())
-
-#     name = results[recommendation]["name"]
-#     rating = results[recommendation]["rating"]
-#     yelp = results[recommendation]["yelp"]
-
-#     business_id = results[recommendation]["business_id"]
-#     categories = results[recommendation]["categories"]
-
-#     result = [name, rating, yelp, business_id, categories]
-
-#     return result
 
 def get_custom_rec(user_id, location, term):
     """Pearson correlation to compare to other users and give custom recommendations"""
@@ -64,20 +31,33 @@ def get_custom_rec(user_id, location, term):
         rest_data = rest_data_dict_setup(users)
         converted_data = load_rest_data_dict(rest_data)
 
+        model = MatrixPreferenceDataModel(converted_data)
+
+        similarity = UserSimilarity(model, pearson_correlation)
+
+        recommender = UserBasedRecommender(model, similarity, with_preference=True)
+
+        recommendations = list(recommender.recommend(user_id))
+
+        for rec in recommendations:
+            if db.session.query(Restaurant).filter_by(restaurant_id=rec, location=location).all():
+                return rec
+
     else:
         act_data = act_data_dict_setup(users)
         converted_data = load_act_data_dict(act_data)
 
-    model = MatrixPreferenceDataModel(converted_data)
+        model = MatrixPreferenceDataModel(converted_data)
 
-    from scikits.crab.metrics import pearson_correlation
-    from scikits.crab.similarities import UserSimilarity
+        similarity = UserSimilarity(model, pearson_correlation)
 
-    similarity = UserSimilarity(model, pearson_correlation)
+        recommender = UserBasedRecommender(model, similarity, with_preference=True)
 
-    recommender = UserBasedRecommender(model, similarity, with_preference=True)
+        recommendations = list(recommender.recommend(user_id))
 
-    print recommender.recommend(user_id)[0]
+        for rec in recommendations:
+            if db.session.query(Activity).filter_by(activity_id=rec, location=location).all():
+                return rec
 
     # Need to query the id output here to find location, and return the data if
     # the location is correct.
@@ -278,6 +258,63 @@ def load_act_data_dict(activity_data):
             for rec_pair in act_recs:
                 activity_data[user][rec_pair[0]] = rec_pair[1]
     return activity_data
+
+
+def check_location_in_db(location, term):
+    """Checks if the location has options in the db to run the Pearson correlation"""
+
+    if term == "restaurant":
+        if db.session.query(Restaurant).filter_by(location=location).all():
+            return True
+    else:
+        if db.session.query(Activity).filter_by(location=location).all():
+            return True
+
+
+def get_act_business_id(activity_id):
+    """Given the activity_id, get the business_id for a Yelp query"""
+
+    business_id = db.session.query(Activity.business_id).filter_by(
+        activity_id=activity_id).all()
+
+    return business_id
+
+
+def get_rest_business_id(restaurant_id):
+    """Given the restaurant_id, get the business_id for a Yelp query"""
+
+    business_id = db.session.query(Restaurant.business_id).filter_by(
+        restaurant_id=restaurant_id).all()
+
+    return business_id
+
+
+def get_info_using_business_id(business_id):
+    """When returning a rec from the Pearson correlation, query Yelp for info"""
+
+    business = client.business(business_id)
+
+    results = {}
+
+    results[(business.name).encode(
+        'utf-8')] = {"name": (business.name).encode('utf-8'),
+                     "rating": float(business.rating),
+                     "yelp": (business.url).encode('utf-8'),
+                     "business_id": (business.id).encode('utf-8'),
+                     "categories": (business.categories),
+                     "image_url": str(business.image_url)}
+
+    name = results[business]["name"]
+    rating = results[business]["rating"]
+    yelp = results[business]["yelp"]
+
+    business_id = results[business]["business_id"]
+    categories = results[business]["categories"]
+    image_url = results[business]["image_url"]
+
+    result = [name, rating, yelp, business_id, categories, image_url]
+
+    return result
 
 
 if __name__ == "__main__":

@@ -137,8 +137,11 @@ def get_restaurant_rec():
 
     # user_id = session["user_id"]
 
-    # If location in restaurant table, use pearson. Else, query Yelp.
-    # restaurant = funcs.get_custom_rec(user_id, location, term)
+    # if check_location_in_db(location, term):
+
+        # restaurant = funcs.get_custom_rec(user_id, location, term)
+
+    # else:
 
     restaurant = funcs.get_random_rec(location, term)
 
