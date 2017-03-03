@@ -135,19 +135,25 @@ def get_restaurant_rec():
 
     term = "restaurant"
 
-    restaurant = funcs.get_recommendation(location, term)
+    # user_id = session["user_id"]
+
+    # If location in restaurant table, use pearson. Else, query Yelp.
+    # restaurant = funcs.get_custom_rec(user_id, location, term)
+
+    restaurant = funcs.get_random_rec(location, term)
 
     name = restaurant[0]
     rating = restaurant[1]
     yelp = restaurant[2]
     business_id = restaurant[3]
     categories = restaurant[4]
+    image_url = restaurant[5]
 
     funcs.confirm_restaurant_in_db(name, rating, location, yelp, business_id)
 
     return jsonify({"name": name, "rating": rating,
                     "yelp": yelp, "business_id": business_id,
-                    "categories": categories})
+                    "categories": categories, "image_url": image_url})
 
 
 @app.route('/get_activity_rec', methods=['GET', 'POST'])
@@ -158,19 +164,25 @@ def get_activity_rec():
 
     term = "activity"
 
-    activity = funcs.get_recommendation(location, term)
+    # user_id = session["user_id"]
+
+    # If location in activity table, use pearson. Else, query Yelp.
+    # activity = funcs.get_custom_rec(user_id, location, term)
+
+    activity = funcs.get_random_rec(location, term)
 
     name = activity[0]
     rating = activity[1]
     yelp = activity[2]
     business_id = activity[3]
     categories = activity[4]
+    image_url = activity[5]
 
     funcs.confirm_activity_in_db(name, rating, location, yelp, business_id)
 
     return jsonify({"name": name, "rating": rating,
                     "yelp": yelp, "business_id": business_id,
-                    "categories": categories})
+                    "categories": categories, "image_url": image_url})
 
 
 @app.route('/save_rest_rec', methods=['POST'])
@@ -179,14 +191,19 @@ def save_restaurant_rec_to_db():
 
     trip_id = request.form.get("trip_id")
     business_id = request.form.get("business_id")
+    rec_value = request.form.get("rec_value")
 
-    restaurant = db.session.query(Restaurant.restaurant_id).filter_by(business_id=business_id).all()
+    restaurant = db.session.query(Restaurant.restaurant_id, Restaurant.name,
+                                  Restaurant.yelp).filter_by(business_id=business_id).all()
 
     restaurant_id = restaurant[0][0]
+    name = restaurant[0][1]
+    yelp = restaurant[0][2]
 
-    funcs.add_rest_rec_to_db(restaurant_id, trip_id)
+    funcs.add_rest_rec_to_db(restaurant_id, trip_id, rec_value)
 
-    return jsonify({"trip_id": trip_id, "restaurant_id": restaurant_id})
+    return jsonify({"trip_id": trip_id, "restaurant_id": restaurant_id,
+                    "name": name, "yelp": yelp, "rec_value": rec_value})
 
 
 @app.route('/save_act_rec', methods=['POST'])
@@ -195,14 +212,19 @@ def save_activity_rec_to_db():
 
     trip_id = request.form.get("trip_id")
     business_id = request.form.get("business_id")
+    rec_value = request.form.get("rec_value")
 
-    activity = db.session.query(Activity.activity_id).filter_by(business_id=business_id).all()
+    activity = db.session.query(Activity.activity_id, Activity.name,
+                                Activity.yelp).filter_by(business_id=business_id).all()
 
     activity_id = activity[0][0]
+    name = activity[0][1]
+    yelp = activity[0][2]
 
-    funcs.add_act_rec_to_db(activity_id, trip_id)
+    funcs.add_act_rec_to_db(activity_id, trip_id, rec_value)
 
-    return jsonify({"trip_id": trip_id, "activity_id": activity_id})
+    return jsonify({"trip_id": trip_id, "activity_id": activity_id,
+                    "name": name, "yelp": yelp, "rec_value": rec_value})
 
 
 if __name__ == "__main__":

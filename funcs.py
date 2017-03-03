@@ -6,10 +6,13 @@ import json
 from yelp.client import Client
 from yelp.oauth1_authenticator import Oauth1Authenticator
 
-from model import User, Activity, Restaurant, RestaurantRec, ActivityRec
+from model import User, Activity, Restaurant, RestaurantRec, ActivityRec, Trip
 from model import db, connect_to_db
 
 import random
+
+from scikits.crab.models import MatrixPreferenceDataModel
+from scikits.crab.recommenders.knn import UserBasedRecommender
 
 cred = open('config_secret.json').read()
 creds = json.loads(cred)
@@ -17,7 +20,78 @@ auth = Oauth1Authenticator(**creds)
 client = Client(auth)
 
 
-def get_recommendation(location, term):
+# def get_recommendation(location, term):
+#     """Use Yelp API to get highly rated recommendations"""
+
+#     # the sort: 2 gives the highest rated options on Yelp
+#     params = {"term": term, "sort": "2", "limit": 40}
+
+#     recommendations = client.search(location, **params)
+
+#     results = {}
+
+#     index = 0
+
+#     while index < 40:
+
+#         results[(recommendations.businesses[index].name).encode(
+#             'utf-8')] = {"name": (recommendations.businesses[index].name).encode('utf-8'),
+#                          "rating": float(recommendations.businesses[index].rating),
+#                          "yelp": (recommendations.businesses[index].url).encode('utf-8'),
+#                          "business_id": (recommendations.businesses[index].id).encode('utf-8'),
+#                          "categories": (recommendations.businesses[index].categories)}
+#         index += 1
+
+#     recommendation = random.choice(results.keys())
+
+#     name = results[recommendation]["name"]
+#     rating = results[recommendation]["rating"]
+#     yelp = results[recommendation]["yelp"]
+
+#     business_id = results[recommendation]["business_id"]
+#     categories = results[recommendation]["categories"]
+
+#     result = [name, rating, yelp, business_id, categories]
+
+#     return result
+
+def get_custom_rec(user_id, location, term):
+    """Pearson correlation to compare to other users and give custom recommendations"""
+
+    users = user_list_setup()
+
+    if term == "restaurant":
+        rest_data = rest_data_dict_setup(users)
+        converted_data = load_rest_data_dict(rest_data)
+
+    else:
+        act_data = act_data_dict_setup(users)
+        converted_data = load_act_data_dict(act_data)
+
+    model = MatrixPreferenceDataModel(converted_data)
+
+    from scikits.crab.metrics import pearson_correlation
+    from scikits.crab.similarities import UserSimilarity
+
+    similarity = UserSimilarity(model, pearson_correlation)
+
+    recommender = UserBasedRecommender(model, similarity, with_preference=True)
+
+    print recommender.recommend(user_id)[0]
+
+    # Need to query the id output here to find location, and return the data if
+    # the location is correct.
+    # Can I query for the specific business using business_id from Yelp api?
+    # Would like to do this so I can get the category and image data
+
+    # output is a list of recommendations. If user has no data,
+    # recommendations are sorted by popularity
+
+    # ordered list of restaurant_ids, or activity_ids. Check if it's in the city
+    # of the trip. If not, go to the next one and try again
+
+
+def get_random_rec(location, term):
     """Use Yelp API to get highly rated recommendations"""
 
     # the sort: 2 gives the highest rated options on Yelp
@@ -36,7 +110,8 @@ def get_recommendation(location, term):
                          "rating": float(recommendations.businesses[index].rating),
                          "yelp": (recommendations.businesses[index].url).encode('utf-8'),
                          "business_id": (recommendations.businesses[index].id).encode('utf-8'),
-                         "categories": (recommendations.businesses[index].categories)}
+                         "categories": (recommendations.businesses[index].categories),
+                         "image_url": str(recommendations.businesses[index].image_url)}
         index += 1
 
     recommendation = random.choice(results.keys())
@@ -47,27 +122,30 @@ def get_recommendation(location, term):
 
     business_id = results[recommendation]["business_id"]
     categories = results[recommendation]["categories"]
+    image_url = results[recommendation]["image_url"]
 
-    result = [name, rating, yelp, business_id, categories]
+    result = [name, rating, yelp, business_id, categories, image_url]
 
     return result
 
 
-def add_act_rec_to_db(activity_id, trip_id):
+def add_act_rec_to_db(activity_id, trip_id, rec_value):
     """Add the activity to the ActivityRec table under users' trip_id"""
 
     saved_rec = ActivityRec(activity_id=activity_id,
-                            trip_id=trip_id)
+                            trip_id=trip_id,
+                            rec_value=rec_value)
 
     db.session.add(saved_rec)
     db.session.commit()
 
 
-def add_rest_rec_to_db(restaurant_id, trip_id):
+def add_rest_rec_to_db(restaurant_id, trip_id, rec_value):
     """Add the restaurant to the RestaurantRec table under users' trip_id"""
 
     saved_rec = RestaurantRec(restaurant_id=restaurant_id,
-                              trip_id=trip_id)
+                              trip_id=trip_id,
+                              rec_value=rec_value)
 
     db.session.add(saved_rec)
     db.session.commit()
@@ -141,6 +219,65 @@ def check_login(username, password):
         return auth.user_id
     else:
         return False
+
+
+def user_list_setup():
+    """Set up list of users in database for data arrangement"""
+    user_list = []
+    users = db.session.query(User.user_id).all()
+    for user in users:
+        user_list.append(user[0])
+    return user_list
+
+
+def rest_data_dict_setup(user_list):
+    """Set up nested dictionary for restaurant pearson correlation"""
+    restaurant_data = {}
+    for user in user_list:
+        if user not in restaurant_data:
+            restaurant_data[user] = {}
+    return restaurant_data
+
+
+def act_data_dict_setup(user_list):
+    """Set up nested dictionary for activity pearson correlation"""
+    activity_data = {}
+    for user in user_list:
+        if user not in activity_data:
+            activity_data[user] = {}
+    return activity_data
+
+
+def load_rest_data_dict(restaurant_data):
+    """Load restaurant_id and rec_values into nested dictionary for pearson correlation"""
+    for user in restaurant_data:
+        trip_list = []
+        trips = db.session.query(Trip.trip_id).filter_by(user_id=user).all()
+        for trip in trips:
+            trip_list.append(trip[0])
+        for trip_id in trip_list:
+            rest_recs = list(db.session.query(
+                RestaurantRec.restaurant_id, RestaurantRec.rec_value).filter_by(
+                trip_id=trip_id).all())
+            for rec_pair in rest_recs:
+                restaurant_data[user][rec_pair[0]] = rec_pair[1]
+    return restaurant_data
+
+
+def load_act_data_dict(activity_data):
+    """Load activity_id and rec_values into nested dictionary for pearson correlation"""
+    for user in activity_data:
+        trip_list = []
+        trips = db.session.query(Trip.trip_id).filter_by(user_id=user).all()
+        for trip in trips:
+            trip_list.append(trip[0])
+        for trip_id in trip_list:
+            act_recs = list(db.session.query(
+                ActivityRec.activity_id, ActivityRec.rec_value).filter_by(
+                trip_id=trip_id).all())
+            for rec_pair in act_recs:
+                activity_data[user][rec_pair[0]] = rec_pair[1]
+    return activity_data
 
 
 if __name__ == "__main__":

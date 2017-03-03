@@ -1,6 +1,7 @@
 appdirs==1.4.0
 blinker==1.4
 click==6.7
+coverage==4.3.4
 Flask==0.12
 Flask-DebugToolbar==0.10.0
 Flask-SQLAlchemy==2.1
@@ -8,11 +9,15 @@ httplib2==0.10.3
 itsdangerous==0.24
 Jinja2==2.9.5
 MarkupSafe==0.23
+numpy==1.12.0
 oauth2==1.9.0.post1
 packaging==16.8
 pkg-resources==0.0.0
 psycopg2==2.6.2
 pyparsing==2.1.10
+scikits.crab==0.1
+scikits.learn==0.8.1
+scipy==0.18.1
 six==1.10.0
 SQLAlchemy==1.1.5
 Werkzeug==0.11.15

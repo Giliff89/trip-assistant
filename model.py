@@ -60,7 +60,7 @@ class Activity(db.Model):
                             autoincrement=True,
                             primary_key=True)
     name = db.Column(db.String(80), nullable=False)
-    rating = db.Column(db.Float, nullable=True)
+    rating = db.Column(db.Float, nullable=False)
     location = db.Column(db.String(80), nullable=False)
     yelp = db.Column(db.String(256), nullable=False)
     business_id = db.Column(db.String(256), nullable=False)
@@ -83,7 +83,7 @@ class Restaurant(db.Model):
                               autoincrement=True,
                               primary_key=True)
     name = db.Column(db.String(80), nullable=False)
-    rating = db.Column(db.Float, nullable=True)
+    rating = db.Column(db.Float, nullable=False)
     location = db.Column(db.String(80), nullable=False)
     yelp = db.Column(db.String(256), nullable=False)
     business_id = db.Column(db.String(256), nullable=False)
@@ -175,13 +175,13 @@ def example_data():
     rest4 = Restaurant(name="Eat This", rating=4.5, location="Seattle",
                        yelp="www.eatthisseattle.com", business_id="Eat-This-Seattle")
 
-    act_rec1 = ActivityRec(trip_id=1, activity_id=2)
-    act_rec2 = ActivityRec(trip_id=2, activity_id=1)
-    act_rec3 = ActivityRec(trip_id=4, activity_id=3)
+    act_rec1 = ActivityRec(trip_id=1, activity_id=2, rec_value=3)
+    act_rec2 = ActivityRec(trip_id=2, activity_id=1, rec_value=2)
+    act_rec3 = ActivityRec(trip_id=4, activity_id=3, rec_value=1)
 
-    rest_rec1 = RestaurantRec(trip_id=2, restaurant_id=4)
-    rest_rec2 = RestaurantRec(trip_id=3, restaurant_id=3)
-    rest_rec3 = RestaurantRec(trip_id=4, restaurant_id=1)
+    rest_rec1 = RestaurantRec(trip_id=2, restaurant_id=4, rec_value=3)
+    rest_rec2 = RestaurantRec(trip_id=3, restaurant_id=3, rec_value=2)
+    rest_rec3 = RestaurantRec(trip_id=4, restaurant_id=1, rec_value=1)
 
     db.session.add_all([user1, user2, user3, trip1, trip2, trip3, trip4, act1,
                         act2, act3, act4, rest1, rest2, rest3, rest4, act_rec1,

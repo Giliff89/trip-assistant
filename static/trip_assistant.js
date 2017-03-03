@@ -6,10 +6,11 @@ function getRestRec(results) {
     $("#rest_rec_results").html("<div>" + "Restaurant name: " +
         results["name"] + "<br>" + "Yelp rating: " + results["rating"] +
         "<br>" + "<a href=" + results["yelp"]+ " " + new_tab + ">Yelp page</a>" +
-        "<br>" + results["categories"][0][0] + "</div>");
+        "<br>" + results["categories"][0][0] + "<br> <img src=" +
+        results["image_url"] + ">" + "</div>");
     $("#rest_business_id").html(results["business_id"]);
     $("#rest_rec_saved").hide();
-    $("#rest-save").css("display","block");
+    $("#rest-buttons").css("display","block");
 } 
 
 
@@ -29,10 +30,11 @@ function getActRec(results) {
     $("#act_rec_results").html("<div>" + "Activity name: " +
         results["name"] + "<br>" + "Yelp rating: " + results["rating"] +
         "<br>" + "<a href=" + results["yelp"]+ " " + new_tab + ">Yelp page</a>" +
-        "<br>" + results["categories"][0][0] + "</div>");
+        "<br>" + results["categories"][0][0] + "<br> <img src=" +
+        results["image_url"] + ">" + "</div>");
     $("#act_business_id").html(results["business_id"]);
     $("#act_rec_saved").hide();
-    $("#act-save").css("display","block");
+    $("#act-buttons").css("display","block");
 }
 
 
@@ -56,9 +58,14 @@ $(document).ajaxStart(function(){
 });
 
 
-function restaurantRecSaved() {
+function restaurantRecSaved(data) {
     $("#rest_rec_saved").show();
-    $("#rest-save").css("display","none");
+    $("#rest-buttons").css("display","none");
+
+    if (data.rec_value == 3) {
+        $(".rest_list").append('<li><a href="' + data.yelp +
+                                           '">' + data.name + '</a></li>');
+    }
 }
 
 
@@ -68,16 +75,23 @@ function saveRestRec(evt) {
     var url = "/save_rest_rec";
     var trip_id = $("#trip_id").text();
     var business_id = $("#rest_business_id").text();
+    var rec_value = $(this).data("recVal");
 
-    $.post(url, {"trip_id": trip_id, "business_id": business_id}, restaurantRecSaved);
+    $.post(url, {"trip_id": trip_id, "business_id": business_id,
+                 "rec_value": rec_value}).then(restaurantRecSaved);
 }
 
-$('button#save_rest_rec').on('click', saveRestRec);
+$('button.rest_rec_feedback').on('click', saveRestRec);
 
 
-function activityRecSaved() {
+function activityRecSaved(data) {
     $("#act_rec_saved").show();
-    $("#act-save").css("display","none");
+    $("#act-buttons").css("display","none");
+
+    if (data.rec_value == 3) {
+        $(".act_list").append('<li><a href="' + data.yelp + '">' +
+                                     data.name + '</a></li>');
+    }
 }
 
 
@@ -87,9 +101,11 @@ function saveActRec(evt) {
     var url = '/save_act_rec';
     var trip_id = $("#trip_id").text();
     var business_id = $("#act_business_id").text();
+    var rec_value = $(this).data("recVal");
     
-    $.post(url, {"trip_id": trip_id, "business_id": business_id}, activityRecSaved);
+    $.post(url, {"trip_id": trip_id, "business_id": business_id,
+                 "rec_value": rec_value}).then(activityRecSaved);
 }
 
-$('button#save_act_rec').on('click', saveActRec);
+$('button.act_rec_feedback').on('click', saveActRec);
 

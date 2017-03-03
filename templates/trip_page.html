@@ -14,11 +14,15 @@
     {% if trip.restaurants %}
       Your saved restaurant recommendations:
       <br>
-      {% for restaurant in trip.restaurants %}
-        <li>
-          <a href='{{ restaurant.yelp }}' target="_blank">{{ restaurant.name }}</a>
-        </li>
-      {% endfor %}
+      <ul class="rest_list">
+        {% for restaurant in trip.restaurants %}
+          {% if restaurant.trip_assoc[0].rec_value == 3 %}
+            <li>
+              <a href='{{ restaurant.yelp }}' target="_blank">{{ restaurant.name }}</a>
+            </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
     {% else %}
       You don't currently have any restaurants recommendations
     {% endif %}
@@ -28,11 +32,15 @@
     {% if trip.activities %}
       Your saved activity recommendations:
       <br>
-      {% for activity in trip.activities %}
-        <li>
-          <a href='{{ activity.yelp }}' target="_blank">{{ activity.name }}</a>
-        </li>
-      {% endfor %}
+      <ul class="act_list">
+        {% for activity in trip.activities %}
+          {% if activity.trip_assoc[0].rec_value == 3 %}
+            <li>
+              <a href='{{ activity.yelp }}' target="_blank">{{ activity.name }}</a>
+            </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
     {% else %}
       You don't currently have any activity recommendations
     {% endif %}
@@ -69,12 +77,19 @@
 
 <br>
 
-<div class="save-button" id="rest-save">
-  <button class="save_rec_button" id="save_rest_rec">
-    Save this recommendation
+<div class="button-rec-data" id="rest-buttons">
+  <button class="rest_rec_feedback" id="love-rest" data-rec-val="3">
+    Love this rec, save it!
+  </button>
+  <button class="rest_rec_feedback" id="meh-rest" data-rec-val="2">
+    Unsure, pass for now
+  </button>
+  <button class="rest_rec_feedback" id="dislike-rest" data-rec-val="1">
+    No thanks, not my style
   </button>
 </div>
-<span id="rest_rec_saved" style="display: none;">Your recommendation has been saved</span>
+
+<span id="rest_rec_saved" style="display: none;">Your feedback has been saved</span>
 
 <br>
 
@@ -89,12 +104,18 @@
 
 <br>
 
-<div class="save-button" id="act-save">
-  <button class="save_rec_button" id="save_act_rec">
-    Save this recommendation
+<div class="button-rec-data" id="act-buttons">
+  <button class="act_rec_feedback" id="love-act" data-rec-val="3">
+    Love this rec, save it!
+  </button>
+  <button class="act_rec_feedback" id="meh-act" data-rec-val="2">
+    Unsure, pass for now
+  </button>
+  <button class="act_rec_feedback" id="dislike-act" data-rec-val="1">
+    No thanks, not my style
   </button>
 </div>
-<span id="act_rec_saved" style="display: none;">Your recommendation has been saved</span>
+<span id="act_rec_saved" style="display: none;">Your feedback has been saved</span>
 
 <script src="http://code.jquery.com/jquery.js"></script>
 <script src="/static/trip_assistant.js"></script>

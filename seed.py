@@ -105,11 +105,12 @@ def load_restaurant_recs():
 
     for row in open("seed_data/restaurant_recs.csv"):
         row = row.rstrip()
-        rest_rec_id, trip_id, restaurant_id = row.split(",")
+        rest_rec_id, trip_id, restaurant_id, rec_value = row.split(",")
 
         rest_rec = RestaurantRec(rest_rec_id=rest_rec_id,
                                  trip_id=trip_id,
-                                 restaurant_id=restaurant_id)
+                                 restaurant_id=restaurant_id,
+                                 rec_value=rec_value)
 
         db.session.add(rest_rec)
 
@@ -125,11 +126,12 @@ def load_activity_recs():
 
     for row in open("seed_data/activity_recs.csv"):
         row = row.rstrip()
-        act_rec_id, trip_id, activity_id = row.split(",")
+        act_rec_id, trip_id, activity_id, rec_value = row.split(",")
 
         act_rec = ActivityRec(act_rec_id=act_rec_id,
                               trip_id=trip_id,
-                              activity_id=activity_id)
+                              activity_id=activity_id,
+                              rec_value=rec_value)
 
         db.session.add(act_rec)
 
