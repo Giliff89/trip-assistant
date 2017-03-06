@@ -135,15 +135,19 @@ def get_restaurant_rec():
 
     term = "restaurant"
 
-    # user_id = session["user_id"]
+    user_id = session["user_id"]
 
-    # if check_location_in_db(location, term):
+    if funcs.check_location_in_db(location, term):
 
-        # restaurant = funcs.get_custom_rec(user_id, location, term)
+        restaurant_id = funcs.get_custom_rec(user_id, location, term)
 
-    # else:
+        business_id = funcs.get_rest_business_id(restaurant_id)
 
-    restaurant = funcs.get_random_rec(location, term)
+        restaurant = funcs.get_info_using_business_id(business_id)
+
+    else:
+
+        restaurant = funcs.get_random_rec(location, term)
 
     name = restaurant[0]
     rating = restaurant[1]
@@ -167,12 +171,19 @@ def get_activity_rec():
 
     term = "activity"
 
-    # user_id = session["user_id"]
+    user_id = session["user_id"]
 
-    # If location in activity table, use pearson. Else, query Yelp.
-    # activity = funcs.get_custom_rec(user_id, location, term)
+    if funcs.check_location_in_db(location, term):
 
-    activity = funcs.get_random_rec(location, term)
+        activity_id = funcs.get_custom_rec(user_id, location, term)
+
+        business_id = funcs.get_act_business_id(activity_id)
+
+        activity = funcs.get_info_using_business_id(business_id)
+
+    else:
+
+        activity = funcs.get_random_rec(location, term)
 
     name = activity[0]
     rating = activity[1]
