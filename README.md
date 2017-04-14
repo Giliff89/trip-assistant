@@ -4,13 +4,4 @@ Figuring out how to spend limited time in an unfamiliar city can be a challenge,
 
 Tech stack:
 
-Python
-JavaScript
-JQuery
-Flask
-Jinja
-SqlAlchemy
-PostgreSQL
-Crab (Scikit Learn and Scipy framework)
-Bootstrap
-Yelp API
+Python, JavaScript, JQuery, Flask, Jinja, SqlAlchemy, PostgreSQL, Crab (Scikit Learn and Scipy framework), Bootstrap, Yelp API
